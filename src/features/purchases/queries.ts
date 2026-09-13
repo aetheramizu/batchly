@@ -170,3 +170,19 @@ export async function getPurchaseFormOptions(supabase: Client) {
 
   return { sources: sourcesResult.data as SourceSummary[], batches };
 }
+
+export type CostRow = Pick<
+  Tables<"additional_costs">,
+  "id" | "purchase_id" | "type" | "amount" | "paid" | "notes" | "created_at"
+>;
+
+export async function listCosts(supabase: Client, purchaseIds?: string[]) {
+  let query = supabase
+    .from("additional_costs")
+    .select("id, purchase_id, type, amount, paid, notes, created_at")
+    .order("created_at");
+  if (purchaseIds) query = query.in("purchase_id", purchaseIds);
+  const { data, error } = await query;
+  if (error) throw error;
+  return data.map((cost) => ({ ...cost, amount: Number(cost.amount) })) as CostRow[];
+}

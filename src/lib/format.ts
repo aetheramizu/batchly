@@ -46,9 +46,10 @@ const MONTHS = [
   "Dec",
 ];
 
-/** "2026-09-12" (DATE) or ISO timestamp → "12 Sep 2026". */
+/** "2026-09-12" (DATE) or timestamp → "12 Sep 2026". Timestamps use Indonesia time. */
 export function formatDate(value: string): string {
-  const [datePart] = value.split("T");
+  const isTimestamp = /[T ]\d{2}:\d{2}/.test(value);
+  const datePart = isTimestamp ? todayISODate(new Date(value)) : value.slice(0, 10);
   const [year, month, day] = datePart.split("-").map(Number);
   if (!year || !month || !day) return value;
   return `${day} ${MONTHS[month - 1]} ${year}`;

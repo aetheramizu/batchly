@@ -99,4 +99,6 @@ test("money formatting", () => {
   assert.equal(parseMoneyInput("1.250.000"), 1_250_000);
   assert.equal(parseMoneyInput(""), null);
   assert.equal(formatDate("2026-09-12"), "12 Sep 2026");
+  // 20:13 UTC is already the next day in Jakarta.
+  assert.equal(formatDate("2026-09-13T20:13:45+00:00"), "14 Sep 2026");
 });

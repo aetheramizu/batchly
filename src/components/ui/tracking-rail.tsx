@@ -1,4 +1,3 @@
-import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
 import {
   TRACKING_STATUSES,
@@ -7,8 +6,8 @@ import {
 } from "@/lib/domain";
 
 /**
- * Six-step status rail. Statuses may be skipped, so the rail only shows the
- * current position — it does not claim earlier steps actually happened.
+ * Six-step status rail showing where the current status sits. Statuses may be
+ * skipped and no history is stored, so earlier steps are not marked as done.
  */
 export function TrackingRail({
   status,
@@ -43,17 +42,16 @@ export function TrackingRail({
                     ? "bg-success"
                     : current
                       ? "bg-accent"
-                      : "bg-ink/70"
+                      : "bg-ink/20"
                   : "bg-surface-3",
               )}
             />
             <span
               className={cn(
                 "hidden items-center gap-1 text-xs leading-tight sm:flex",
-                current ? "font-semibold text-ink" : reached ? "text-ink-2" : "text-ink-3",
+                current ? "font-semibold text-ink" : "text-ink-3",
               )}
             >
-              {reached && !current && <Check className="size-3 shrink-0" aria-hidden="true" />}
               <span className="truncate">{TRACKING_STATUS_LABEL[step]}</span>
             </span>
           </li>

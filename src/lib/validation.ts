@@ -224,3 +224,9 @@ export function isTrackingStatusValue(value: string): value is TrackingStatus {
 export function isCostTypeValue(value: string): value is CostType {
   return COST_VALUES.includes(value);
 }
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isUuid(value: string): boolean {
+  return UUID_PATTERN.test(value);
+}
