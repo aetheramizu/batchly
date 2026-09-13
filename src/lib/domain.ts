@@ -101,10 +101,6 @@ export function isCountry(value: unknown): value is Country {
   return COUNTRIES.includes(value as Country);
 }
 
-export function isCostType(value: unknown): value is CostType {
-  return COST_TYPES.includes(value as CostType);
-}
-
 /** Derived payment status (DATA_MODEL §15, §20). Never stored. */
 export function paymentStatus(total: number, paid: number): PaymentStatus {
   if (paid <= 0) return "UNPAID";

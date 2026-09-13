@@ -3,7 +3,6 @@
 // Keep free of runtime imports (tested with `node --test`).
 
 import type {
-  CostType,
   Country,
   PurchaseOrigin,
   SourceType,
@@ -219,10 +218,6 @@ export function validateCostDraft(draft: CostDraft): FieldErrors {
 
 export function isTrackingStatusValue(value: string): value is TrackingStatus {
   return STATUS_VALUES.includes(value);
-}
-
-export function isCostTypeValue(value: string): value is CostType {
-  return COST_VALUES.includes(value);
 }
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

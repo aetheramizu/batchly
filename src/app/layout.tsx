@@ -13,13 +13,39 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["500", "600", "700"],
 });
 
+const description =
+  "A personal purchase tracker for collectors. Keep track of group orders, direct seller purchases, payments, tracking, additional costs and OS.";
+
+const shareImage = {
+  url: "/og-image.png",
+  width: 1200,
+  height: 630,
+  alt: "Batchly — personal purchase tracker for collectors",
+};
+
 export const metadata: Metadata = {
+  // Absolute base for share image URLs. Without SITE_URL, Next.js falls back
+  // to the Vercel deployment URL (or localhost in development).
+  metadataBase: process.env.SITE_URL ? new URL(process.env.SITE_URL) : undefined,
   title: {
     default: "Batchly",
     template: "%s · Batchly",
   },
-  description:
-    "Keep track of what you bought, where it is, and what you still need to pay.",
+  description,
+  applicationName: "Batchly",
+  openGraph: {
+    type: "website",
+    siteName: "Batchly",
+    title: "Batchly",
+    description,
+    images: [shareImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Batchly",
+    description,
+    images: [shareImage],
+  },
 };
 
 export const viewport: Viewport = {
