@@ -1,26 +1,111 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/*
+ * Batchly design tokens (docs/DESIGN_SYSTEM.md, Stitch visual reference).
+ * Neutral warm canvas, white surfaces, one coral accent, semantic status tones.
+ * Accent values are darkened from the Stitch coral so white button text and
+ * accent links meet WCAG AA contrast.
+ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  --color-canvas: #f7f6f3;
+  --color-surface: #ffffff;
+  --color-surface-2: #f2f0ec;
+  --color-surface-3: #e9e6e0;
+  --color-line: #e7e4de;
+  --color-line-strong: #d4d0c8;
+
+  --color-ink: #18181b;
+  --color-ink-2: #52525b;
+  --color-ink-3: #6b6b73;
+
+  --color-accent: #d24127;
+  --color-accent-hover: #b8361f;
+  --color-accent-ink: #b0341e;
+  --color-accent-soft: #fdeee9;
+
+  --color-success: #047857;
+  --color-success-soft: #e8f7f0;
+  --color-warning: #a2520a;
+  --color-warning-soft: #fdf3e1;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fdeeee;
+  --color-info: #1d4ed8;
+  --color-info-soft: #edf3fe;
+  --color-teal: #0f766e;
+  --color-teal-soft: #e6f6f4;
+
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-sheet: 20px;
+
+  --shadow-float: 0 8px 24px -8px rgb(24 24 27 / 0.18), 0 2px 6px -2px rgb(24 24 27 / 0.08);
+  --shadow-modal: 0 24px 64px -16px rgb(24 24 27 / 0.32);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11";
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+  }
+
+  /* Mobile browsers zoom into inputs under 16px. */
+  @media (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+
+  dialog::backdrop {
+    background: rgb(24 24 27 / 0.4);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
