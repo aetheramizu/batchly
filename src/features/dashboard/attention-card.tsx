@@ -6,6 +6,8 @@ import { STALE_THRESHOLD_DAYS } from "@/lib/domain";
 import { formatRupiah, pluralize } from "@/lib/format";
 import type { PurchaseView } from "../purchases/queries";
 
+const STALE_DIRECT_LIMIT = 3;
+
 export type AttentionData = {
   staleBatches: number;
   staleDirect: PurchaseView[];
@@ -28,22 +30,6 @@ export function AttentionCard({ data }: { data: AttentionData }) {
       title: `${pluralize(data.staleBatches, "batch", "batches")} not updated recently`,
       detail: `No tracking update in ${STALE_THRESHOLD_DAYS}+ days`,
       href: "/batches?status=needs-update",
-    });
-  }
-  if (data.staleDirect.length > 0) {
-    const [first] = data.staleDirect;
-    items.push({
-      key: "stale-direct",
-      icon: Clock,
-      title: `${pluralize(data.staleDirect.length, "Direct Seller purchase")} not updated recently`,
-      detail:
-        data.staleDirect.length === 1
-          ? first.item_name
-          : `${first.item_name} and ${data.staleDirect.length - 1} more`,
-      href:
-        data.staleDirect.length === 1
-          ? `/purchases/${first.id}?from=dashboard`
-          : "/purchases?sort=updated",
     });
   }
   if (data.outstanding.count > 0) {
@@ -74,10 +60,13 @@ export function AttentionCard({ data }: { data: AttentionData }) {
     });
   }
 
+  const staleDirect = data.staleDirect.slice(0, STALE_DIRECT_LIMIT);
+  const nothing = items.length === 0 && staleDirect.length === 0;
+
   return (
     <Card>
       <CardHeader title="Needs attention" />
-      {items.length === 0 ? (
+      {nothing ? (
         <div className="flex items-center gap-3 px-5 pb-5 text-sm text-ink-2">
           <CircleCheck className="size-5 text-success" aria-hidden="true" />
           All caught up. Nothing needs your attention right now.
@@ -110,6 +99,39 @@ export function AttentionCard({ data }: { data: AttentionData }) {
               </Link>
             </li>
           ))}
+          {staleDirect.length > 0 && (
+            <li className="flex items-start gap-3 px-3 py-2.5">
+              <span
+                aria-hidden="true"
+                className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-warning-soft text-warning [&_svg]:size-4"
+              >
+                <Clock />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-ink">
+                  {pluralize(data.staleDirect.length, "Direct Seller purchase")} not updated recently
+                </p>
+                <ul className="mt-1 flex flex-col gap-0.5">
+                  {staleDirect.map((p) => (
+                    <li key={p.id} className="flex items-baseline justify-between gap-3 text-sm">
+                      <Link
+                        href={`/purchases/${p.id}?from=dashboard`}
+                        className="truncate text-accent-ink hover:underline"
+                      >
+                        {p.item_name}
+                      </Link>
+                      <span className="tabular shrink-0 text-xs text-ink-3">{p.daysSinceUpdate} days</span>
+                    </li>
+                  ))}
+                </ul>
+                {data.staleDirect.length > staleDirect.length && (
+                  <p className="mt-1 text-xs text-ink-3">
+                    And {data.staleDirect.length - staleDirect.length} more
+                  </p>
+                )}
+              </div>
+            </li>
+          )}
         </ul>
       )}
     </Card>
