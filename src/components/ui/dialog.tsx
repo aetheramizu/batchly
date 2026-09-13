@@ -1,7 +1,8 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 
 /**
@@ -27,15 +28,23 @@ export function Dialog({
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
+  // Portaled to <body> so inputs inside never submit a surrounding <form>.
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
     if (open && !dialog.open) dialog.showModal();
     if (!open && dialog.open) dialog.close();
-  }, [open]);
+  }, [open, mounted]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <dialog
       ref={ref}
       aria-labelledby={titleId}
@@ -76,6 +85,7 @@ export function Dialog({
           {footer}
         </div>
       )}
-    </dialog>
+    </dialog>,
+    document.body,
   );
 }
