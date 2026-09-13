@@ -2,9 +2,15 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabaseEnv } from "./env";
 
-// Refreshes the Supabase auth session cookies on each request.
-// Route protection/redirects are not implemented here yet; authorization is
-// enforced by RLS and will be checked close to the data in each feature.
+// Pages for signed-out visitors. Signed-in users are sent to the app instead.
+const AUTH_PAGES = ["/login", "/signup", "/forgot-password"];
+
+// Reachable without a session (email link handling).
+const PUBLIC_PREFIXES = ["/auth/"];
+
+// Refreshes the Supabase auth session cookies on each request and redirects
+// signed-out visitors away from the app. This is a UX guard only: every data
+// access is still authorized by RLS and re-checked in server code.
 export async function updateSession(request: NextRequest) {
   const { url, publishableKey } = getSupabaseEnv();
   let response = NextResponse.next({ request });
@@ -28,7 +34,34 @@ export async function updateSession(request: NextRequest) {
 
   // Do not run code between createServerClient and getClaims(): it validates
   // the JWT and triggers the token refresh that writes the updated cookies.
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+  const signedIn = Boolean(data?.claims?.sub);
+
+  const { pathname, search } = request.nextUrl;
+  const isAuthPage = AUTH_PAGES.includes(pathname);
+  const isPublic = PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+
+  if (!signedIn && !isAuthPage && !isPublic) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/login";
+    loginUrl.search = "";
+    if (pathname !== "/") loginUrl.searchParams.set("next", `${pathname}${search}`);
+    return redirectWithCookies(loginUrl, response);
+  }
+
+  if (signedIn && isAuthPage) {
+    const appUrl = request.nextUrl.clone();
+    appUrl.pathname = "/";
+    appUrl.search = "";
+    return redirectWithCookies(appUrl, response);
+  }
 
   return response;
+}
+
+// Keep refreshed session cookies when redirecting.
+function redirectWithCookies(url: URL, from: NextResponse) {
+  const redirect = NextResponse.redirect(url);
+  from.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+  return redirect;
 }
