@@ -67,7 +67,11 @@ export function PageHeader({
             <p className="mt-1.5 max-w-prose text-[15px] text-ink-2">{description}</p>
           )}
         </div>
-        {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+        {actions && (
+          <div className="flex flex-wrap items-center gap-2 max-sm:has-[>.hidden:only-child]:hidden">
+            {actions}
+          </div>
+        )}
       </div>
     </header>
   );
