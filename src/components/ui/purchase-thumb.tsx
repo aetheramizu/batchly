@@ -20,7 +20,8 @@ export function PurchaseThumb({
   const sizes = {
     sm: "size-10 rounded-lg",
     md: "size-14 rounded-xl",
-    lg: "aspect-square w-full rounded-[var(--radius-card)]",
+    // Width comes from the caller; `cn` does not merge conflicting classes.
+    lg: "aspect-square rounded-[var(--radius-card)]",
   };
 
   if (!src) {
