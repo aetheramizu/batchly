@@ -28,6 +28,7 @@ export function PaymentCard({
   const [saving, setSaving] = useState(false);
   const toast = useToast();
   const priceLabel = takenOs ? "OS price" : "Price";
+  const fieldError = error.startsWith("Paid amount") ? error : undefined;
 
   function openDialog() {
     setValue(formatMoneyInput(String(paid)));
@@ -39,7 +40,7 @@ export function PaymentCard({
     if (saving) return;
     const amount = parseMoneyInput(value);
     if (amount === null) return setError("Paid amount is required.");
-    if (amount > price) return setError(`Paid amount cannot exceed ${priceLabel.toLowerCase()}.`);
+    if (amount > price) return setError(`Paid amount cannot exceed the ${takenOs ? "OS price" : "price"}.`);
     setSaving(true);
     const result = await updatePurchasePayment(purchaseId, amount);
     setSaving(false);
@@ -80,11 +81,11 @@ export function PaymentCard({
         }
       >
         <div className="flex flex-col gap-4">
-          {error && !error.startsWith("Paid amount") && <FormAlert>{error}</FormAlert>}
+          {error && !fieldError && <FormAlert>{error}</FormAlert>}
           <Field
             id="payment-paid"
             label="Paid amount"
-            error={error.startsWith("Paid amount") ? error : undefined}
+            error={fieldError}
             action={
               <button
                 type="button"
@@ -106,7 +107,8 @@ export function PaymentCard({
                 setValue(next);
                 setError("");
               }}
-              aria-describedby={describedBy("payment-paid", error)}
+              aria-invalid={Boolean(fieldError)}
+              aria-describedby={describedBy("payment-paid", fieldError)}
             />
           </Field>
           <PaymentSummary total={price} paid={parseMoneyInput(value)} totalLabel={priceLabel} />
