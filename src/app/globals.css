@@ -27,6 +27,8 @@
   --color-accent-hover: #b8361f;
   --color-accent-ink: #b0341e;
   --color-accent-soft: #fdeee9;
+  /* Warm ambient glow used only by the public landing decorations. */
+  --color-accent-glow: #ffc2b1;
 
   --color-success: #047857;
   --color-success-soft: #e8f7f0;
@@ -46,7 +48,7 @@
   --shadow-float: 0 8px 24px -8px rgb(24 24 27 / 0.18), 0 2px 6px -2px rgb(24 24 27 / 0.08);
   --shadow-modal: 0 24px 64px -16px rgb(24 24 27 / 0.32);
   --shadow-preview:
-    0 32px 64px -28px rgb(24 24 27 / 0.26), 0 12px 26px -14px rgb(24 24 27 / 0.12);
+    0 26px 60px -20px rgb(181 95 69 / 0.3), 0 12px 30px -14px rgb(24 24 27 / 0.12);
 }
 
 @layer base {
@@ -90,6 +92,67 @@
 
 @utility tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Landing-only interactive lift, mirroring the reference hover:
+ * a small rise with an animated shadow. Defined as unlayered CSS so it
+ * reliably overrides the shared button base transition without touching the
+ * authenticated UI. `-accent` swaps in a coral-tinted shadow for primary CTAs.
+ */
+.landing-action {
+  transition:
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.landing-action:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-float);
+}
+
+.landing-action:active {
+  transform: translateY(0);
+}
+
+.landing-action-accent:hover {
+  box-shadow:
+    0 12px 24px -6px rgb(210 65 39 / 0.34),
+    0 4px 10px -4px rgb(24 24 27 / 0.12);
+}
+
+/*
+ * Landing "How it works" steps. The hidden state is opt-in via
+ * [data-reveal="out"] (set by RevealOnScroll only when motion is allowed), so
+ * the steps render fully visible without JavaScript. When the section scrolls
+ * into view the flag flips to "in" and the numbers pop while each connector
+ * eases in from its number, staggered per step via --step-delay.
+ */
+.step-num {
+  transition:
+    opacity 400ms ease,
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--step-delay, 0ms);
+}
+
+.step-link {
+  transition:
+    opacity 500ms ease,
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--step-delay, 0ms) + 90ms);
+}
+
+[data-reveal="out"] .step-num {
+  opacity: 0;
+  transform: scale(0.82);
+}
+
+[data-reveal="out"] .step-link {
+  opacity: 0;
+  transform: translateX(-10px);
 }
 
 @media (prefers-reduced-motion: reduce) {

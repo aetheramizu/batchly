@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LandingBackdrop } from "@/features/landing/landing-backdrop";
 import { LandingCta } from "@/features/landing/landing-cta";
 import { LandingFeatures } from "@/features/landing/landing-features";
 import { LandingFooter } from "@/features/landing/landing-footer";
@@ -14,7 +15,8 @@ export const metadata: Metadata = {
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-dvh flex-col bg-canvas">
+    <div className="relative isolate flex min-h-dvh flex-col overflow-x-clip bg-canvas">
+      <LandingBackdrop />
       <LandingHeader />
       <main className="flex-1">
         <LandingHero />

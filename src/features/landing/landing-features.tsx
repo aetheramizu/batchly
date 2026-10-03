@@ -19,7 +19,7 @@ const FEATURES: { icon: LucideIcon; title: string; description: string }[] = [
   },
 ];
 
-/** Three compact feature cards. */
+/** Three centered benefit cards. */
 export function LandingFeatures() {
   return (
     <section className="pb-16 sm:pb-20">
@@ -28,15 +28,17 @@ export function LandingFeatures() {
           {FEATURES.map(({ icon: Icon, title, description }) => (
             <li
               key={title}
-              className="flex flex-col rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[0_1px_2px_rgb(24_24_27_/_0.04)] transition-shadow duration-200 hover:shadow-[var(--shadow-float)]"
+              className="flex flex-col items-center rounded-[var(--radius-card)] border border-line bg-surface/75 px-6 py-8 text-center"
             >
-              <span className="grid size-11 place-items-center rounded-[var(--radius-control)] bg-accent-soft text-accent-ink">
-                <Icon className="size-[22px]" strokeWidth={1.9} aria-hidden="true" />
+              <span className="grid size-[54px] place-items-center rounded-[15px] bg-accent-soft text-accent">
+                <Icon className="size-6" strokeWidth={1.8} aria-hidden="true" />
               </span>
-              <h3 className="mt-5 font-display text-base font-semibold tracking-[-0.01em] text-ink">
+              <h3 className="mt-5 font-display text-[17px] font-semibold tracking-[-0.01em] text-ink">
                 {title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-2">{description}</p>
+              <p className="mt-2 max-w-[30ch] text-sm leading-relaxed text-ink-2">
+                {description}
+              </p>
             </li>
           ))}
         </ul>
