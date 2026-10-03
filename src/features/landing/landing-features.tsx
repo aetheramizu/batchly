@@ -24,19 +24,19 @@ export function LandingFeatures() {
   return (
     <section className="pb-16 sm:pb-20">
       <Container>
-        <ul className="grid gap-4 sm:grid-cols-3">
+        <ul className="grid gap-4 sm:grid-cols-3 sm:gap-5">
           {FEATURES.map(({ icon: Icon, title, description }) => (
             <li
               key={title}
-              className="rounded-[var(--radius-card)] border border-line bg-surface p-5 sm:p-6"
+              className="flex flex-col rounded-[var(--radius-card)] border border-line bg-surface p-6 shadow-[0_1px_2px_rgb(24_24_27_/_0.04)] transition-shadow duration-200 hover:shadow-[var(--shadow-float)]"
             >
-              <span className="grid size-10 place-items-center rounded-[var(--radius-control)] bg-accent-soft text-accent-ink">
-                <Icon className="size-5" aria-hidden="true" />
+              <span className="grid size-11 place-items-center rounded-[var(--radius-control)] bg-accent-soft text-accent-ink">
+                <Icon className="size-[22px]" strokeWidth={1.9} aria-hidden="true" />
               </span>
-              <h3 className="mt-4 font-display text-base font-semibold text-ink">
+              <h3 className="mt-5 font-display text-base font-semibold tracking-[-0.01em] text-ink">
                 {title}
               </h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{description}</p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-2">{description}</p>
             </li>
           ))}
         </ul>

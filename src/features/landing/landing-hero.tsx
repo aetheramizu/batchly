@@ -1,28 +1,25 @@
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { Container } from "./container";
+import { HeroBackdrop } from "./hero-backdrop";
 import { ProductPreview } from "./product-preview";
 
-/** Public hero: headline, description, primary actions, product preview. */
+/** Public hero: editorial overline, headline, actions, product preview. */
 export function LandingHero() {
   return (
-    <section className="relative overflow-hidden pt-16 pb-16 sm:pt-24 sm:pb-20">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          backgroundImage:
-            "radial-gradient(70% 60% at 50% -10%, var(--color-accent-soft), transparent 70%)",
-        }}
-      />
+    <section className="relative isolate overflow-hidden pt-14 pb-16 sm:pt-20 sm:pb-20">
+      <HeroBackdrop />
 
       <Container className="flex flex-col items-center text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm font-medium text-ink-2">
-          <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
-          A simple home for your collection
-        </span>
+        <p className="flex items-center gap-3 text-[13px] font-medium tracking-[0.16em] text-ink-3 uppercase">
+          <span
+            className="h-px w-6 bg-accent"
+            aria-hidden="true"
+          />
+          Group orders &amp; direct sellers
+        </p>
 
-        <h1 className="mt-6 max-w-3xl font-display text-[36px] leading-[1.05] font-bold tracking-[-0.03em] text-balance text-ink sm:text-[56px] lg:text-[64px]">
+        <h1 className="mt-5 max-w-3xl font-display text-[36px] leading-[1.05] font-bold tracking-[-0.03em] text-balance text-ink sm:text-[56px] lg:text-[64px]">
           Your collection, organized.
         </h1>
 
