@@ -140,10 +140,10 @@ export default async function BatchesPage({ searchParams }: PageProps<"/batches"
 
 function Stat({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
   return (
-    <div className="px-4 py-3.5 sm:px-5">
-      <dt className="text-sm text-ink-3">{label}</dt>
+    <div className="px-3 py-3 sm:px-5 sm:py-3.5">
+      <dt className="text-sm text-ink-3 max-sm:text-xs max-sm:leading-tight">{label}</dt>
       <dd
-        className={`tabular mt-0.5 font-display text-2xl font-bold ${highlight ? "text-warning" : "text-ink"}`}
+        className={`tabular mt-1 font-display text-2xl font-bold sm:mt-0.5 ${highlight ? "text-warning" : "text-ink"}`}
       >
         {value}
       </dd>

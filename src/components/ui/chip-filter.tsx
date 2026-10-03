@@ -18,11 +18,7 @@ export function ChipFilter({
   const { update } = useUpdateParams();
 
   return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0"
-    >
+    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
       {options.map((option) => {
         const selected = option.value === value;
         return (
