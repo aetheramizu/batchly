@@ -18,7 +18,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       </a>
 
       <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-line bg-surface px-4 py-6 lg:flex">
-        <Link href="/" className="mb-8 px-2" aria-label="Batchly dashboard">
+        <Link href="/dashboard" className="mb-8 px-2" aria-label="Batchly dashboard">
           <Logo />
         </Link>
         <SidebarNav />
@@ -28,7 +28,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       </aside>
 
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-canvas/90 px-4 backdrop-blur lg:hidden">
-        <Link href="/" aria-label="Batchly dashboard">
+        <Link href="/dashboard" aria-label="Batchly dashboard">
           <Logo />
         </Link>
         <AccountMenu email={email} placement="down" compact />

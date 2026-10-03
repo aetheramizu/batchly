@@ -21,7 +21,7 @@ function backTarget(from: string | undefined) {
   if (from?.startsWith("purchase:") && isUuid(from.slice(9))) {
     return { href: `/purchases/${from.slice(9)}`, label: "Back to purchase" };
   }
-  if (from === "dashboard") return { href: "/", label: "Dashboard" };
+  if (from === "dashboard") return { href: "/dashboard", label: "Dashboard" };
   return { href: "/batches", label: "Batches" };
 }
 

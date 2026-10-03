@@ -25,7 +25,7 @@ function backTarget(from: string | undefined) {
   if (from?.startsWith("batch:") && isUuid(from.slice(6))) {
     return { href: `/batches/${from.slice(6)}`, label: "Back to batch" };
   }
-  if (from === "dashboard") return { href: "/", label: "Dashboard" };
+  if (from === "dashboard") return { href: "/dashboard", label: "Dashboard" };
   if (from === "finance") return { href: "/finance", label: "Finance" };
   return { href: "/purchases", label: "Purchases" };
 }

@@ -30,7 +30,7 @@ function validateEmail(email: string) {
 /** Only allow redirects to paths inside the app. */
 function safeNext(value: FormDataEntryValue | null) {
   const next = typeof value === "string" ? value : "";
-  return next.startsWith("/") && !next.startsWith("//") ? next : "/";
+  return next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
 }
 
 async function siteOrigin() {
@@ -111,7 +111,7 @@ export async function signUp(
     };
   }
 
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function requestPasswordReset(
@@ -154,7 +154,7 @@ export async function updatePassword(
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: authErrorMessage(error) };
 
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function signOut() {

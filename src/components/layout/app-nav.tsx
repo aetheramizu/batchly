@@ -14,7 +14,7 @@ import { buttonClasses } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
 const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/", label: "Dashboard", icon: LayoutGrid },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { href: "/purchases", label: "Purchases", icon: ShoppingBag },
   { href: "/batches", label: "Batches", icon: Layers },
   { href: "/finance", label: "Finance", icon: Wallet },
@@ -23,7 +23,7 @@ const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
 function useIsActive() {
   const pathname = usePathname();
   return (href: string) => {
-    if (href === "/") return pathname === "/";
+    if (href === "/dashboard") return pathname === "/dashboard";
     if (href === "/purchases") {
       return pathname.startsWith("/purchases") && pathname !== "/purchases/new";
     }

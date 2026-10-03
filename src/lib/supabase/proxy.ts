@@ -5,8 +5,11 @@ import { getSupabaseEnv } from "./env";
 // Pages for signed-out visitors. Signed-in users are sent to the app instead.
 const AUTH_PAGES = ["/login", "/signup", "/forgot-password"];
 
-// Reachable without a session (email link handling).
+// Reachable without a session (the public landing page and email link handling).
 const PUBLIC_PREFIXES = ["/auth/"];
+
+// Signed-in home. The landing page and auth pages send signed-in users here.
+const APP_HOME = "/dashboard";
 
 // Refreshes the Supabase auth session cookies on each request and redirects
 // signed-out visitors away from the app. This is a UX guard only: every data
@@ -39,19 +42,20 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname, search } = request.nextUrl;
   const isAuthPage = AUTH_PAGES.includes(pathname);
+  const isLanding = pathname === "/";
   const isPublic = PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
-  if (!signedIn && !isAuthPage && !isPublic) {
+  if (!signedIn && !isAuthPage && !isLanding && !isPublic) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
     loginUrl.search = "";
-    if (pathname !== "/") loginUrl.searchParams.set("next", `${pathname}${search}`);
+    if (!isLanding) loginUrl.searchParams.set("next", `${pathname}${search}`);
     return redirectWithCookies(loginUrl, response);
   }
 
-  if (signedIn && isAuthPage) {
+  if (signedIn && (isAuthPage || isLanding)) {
     const appUrl = request.nextUrl.clone();
-    appUrl.pathname = "/";
+    appUrl.pathname = APP_HOME;
     appUrl.search = "";
     return redirectWithCookies(appUrl, response);
   }
