@@ -209,8 +209,7 @@ export function PurchaseForm(props: Props) {
 
       if (imageOk) toast.success(initial ? "Purchase updated" : "Purchase added");
       router.push(`/purchases/${purchaseId}`);
-    } catch (error) {
-      console.error(error);
+    } catch {
       setFormError("Couldn't save this purchase. Check your connection and try again.");
     } finally {
       savingRef.current = false;
