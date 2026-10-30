@@ -44,3 +44,6 @@ Built with Next.js and Supabase (Auth, Postgres with RLS, Storage).
 
 Product and implementation rules live in `docs/` (PRD, data model, UX spec,
 design system, test plan). See `CLAUDE.md` for how they are prioritised.
+
+For production domain setup and verification, see
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
