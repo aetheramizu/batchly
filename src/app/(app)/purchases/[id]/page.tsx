@@ -5,12 +5,12 @@ import { notFound } from "next/navigation";
 import { OsBadge, PaymentBadge, StatusBadge } from "@/components/ui/badge";
 import { BackLink } from "@/components/ui/back-link";
 import { ButtonLink } from "@/components/ui/button";
-import { PurchaseThumb } from "@/components/ui/purchase-thumb";
 import { Card, CardHeader, DetailRow } from "@/components/ui/surface";
 import { ArchiveButton } from "@/features/purchases/detail/archive-button";
 import { CostsCard } from "@/features/purchases/detail/costs-card";
 import { OsCard } from "@/features/purchases/detail/os-card";
 import { PaymentCard } from "@/features/purchases/detail/payment-card";
+import { PurchaseImageButton } from "@/features/purchases/detail/purchase-image-button";
 import { TrackingCard } from "@/features/purchases/detail/tracking-card";
 import { getPurchase, listCosts } from "@/features/purchases/queries";
 import { requireUser } from "@/lib/auth";
@@ -37,7 +37,7 @@ export default async function PurchaseDetailPage({
   const [{ id }, query] = await Promise.all([params, searchParams]);
   if (!isUuid(id)) notFound();
 
-  const { supabase } = await requireUser();
+  const { supabase, userId } = await requireUser();
   const purchase = await getPurchase(supabase, id);
   if (!purchase) notFound();
 
@@ -74,13 +74,34 @@ export default async function PurchaseDetailPage({
 
       {/* Summary */}
       <Card className="p-5 sm:p-6">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-          <PurchaseThumb
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
+          <PurchaseImageButton
+            userId={userId}
+            purchaseId={purchase.id}
+            itemName={purchase.item_name}
             src={purchase.imageSrc}
-            alt={`Image of ${purchase.item_name}`}
-            size="lg"
-            className="w-24 sm:w-32"
+            disabled={Boolean(archivedAt)}
           />
+
+          {!archivedAt && (
+            <div className="grid grid-cols-[1fr_auto] items-center gap-2 sm:hidden">
+              <ButtonLink
+                href={`/purchases/${purchase.id}/edit`}
+                variant="primary"
+                size="sm"
+                className="w-full"
+              >
+                <Pencil aria-hidden="true" />
+                Edit purchase
+              </ButtonLink>
+              <ArchiveButton
+                purchaseId={purchase.id}
+                itemName={purchase.item_name}
+                archived={false}
+              />
+            </div>
+          )}
+
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={purchase.status} />
@@ -112,7 +133,22 @@ export default async function PurchaseDetailPage({
                 </>
               )}
             </p>
+
+            {!archivedAt && (
+              <div className="mt-4 hidden items-center gap-2.5 sm:flex sm:flex-wrap">
+                <ButtonLink href={`/purchases/${purchase.id}/edit`} variant="primary" size="sm">
+                  <Pencil aria-hidden="true" />
+                  Edit purchase
+                </ButtonLink>
+                <ArchiveButton
+                  purchaseId={purchase.id}
+                  itemName={purchase.item_name}
+                  archived={false}
+                />
+              </div>
+            )}
           </div>
+
           <div className="flex flex-row items-end justify-between gap-3 border-t border-line pt-4 sm:flex-col sm:border-0 sm:pt-0">
             <div className="sm:text-right">
               <p className="text-sm text-ink-3">{takenOs ? "OS price" : "Price"}</p>
@@ -123,24 +159,6 @@ export default async function PurchaseDetailPage({
             <PaymentBadge status={purchase.payment} />
           </div>
         </div>
-        {!archivedAt && (
-          <div className="mt-5 grid grid-cols-[1fr_auto] items-center gap-2 border-t border-line pt-4 sm:flex sm:flex-wrap sm:justify-start sm:gap-2.5">
-            <ButtonLink
-              href={`/purchases/${purchase.id}/edit`}
-              variant="primary"
-              size="sm"
-              className="w-full sm:w-auto"
-            >
-              <Pencil aria-hidden="true" />
-              Edit purchase
-            </ButtonLink>
-            <ArchiveButton
-              purchaseId={purchase.id}
-              itemName={purchase.item_name}
-              archived={false}
-            />
-          </div>
-        )}
       </Card>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">

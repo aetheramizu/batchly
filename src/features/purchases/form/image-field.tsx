@@ -5,7 +5,14 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/heic", "image/heif"];
+export const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/heic",
+  "image/heif",
+];
 
 /** What the form should do with the purchase image on save. */
 export type ImageChange =
@@ -50,7 +57,7 @@ export function ImageField({
   function pick(file: File | undefined) {
     setError("");
     if (!file) return;
-    if (!ACCEPTED.includes(file.type)) {
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
       setError("Use a JPG, PNG, WebP, GIF or HEIC image.");
       return;
     }
@@ -70,7 +77,7 @@ export function ImageField({
         ref={inputRef}
         id={inputId}
         type="file"
-        accept={ACCEPTED.join(",")}
+        accept={ACCEPTED_IMAGE_TYPES.join(",")}
         className="sr-only"
         onChange={(event) => pick(event.target.files?.[0])}
       />
