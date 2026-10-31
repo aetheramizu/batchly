@@ -352,10 +352,10 @@ export function PurchaseForm(props: Props) {
                 <label
                   key={option}
                   className={cn(
-                    "flex h-11 cursor-pointer items-center justify-center gap-1.5 rounded-[var(--radius-control)] border text-sm font-medium transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
+                    "flex h-11 cursor-pointer items-center justify-center gap-1.5 rounded-[var(--radius-control)] border px-1.5 text-sm font-medium select-none touch-manipulation transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
                     country === option
                       ? "border-ink bg-ink text-white"
-                      : "border-line bg-surface text-ink-2 hover:border-line-strong",
+                      : "border-line bg-surface text-ink-2 hover:border-line-strong active:bg-surface-2",
                   )}
                 >
                   <input
@@ -370,8 +370,8 @@ export function PurchaseForm(props: Props) {
                     }}
                     className="sr-only"
                   />
-                  <span className="tabular text-xs opacity-60">{COUNTRY_CODE[option]}</span>
-                  {COUNTRY_LABEL[option]}
+                  <span className="tabular text-xs opacity-60 shrink-0">{COUNTRY_CODE[option]}</span>
+                  <span className="truncate">{COUNTRY_LABEL[option]}</span>
                 </label>
               ))}
             </div>
@@ -523,7 +523,7 @@ export function PurchaseForm(props: Props) {
                     setPaid(price);
                     clearError("paidAmount");
                   }}
-                  className="h-7 text-sm font-medium text-accent-ink hover:underline"
+                  className="-my-1 inline-flex h-8 items-center rounded px-1.5 text-sm font-medium text-accent-ink hover:underline select-none touch-manipulation"
                 >
                   Paid in full
                 </button>
@@ -583,7 +583,7 @@ export function PurchaseForm(props: Props) {
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end">
           <Link
             href={backHref}
-            className="hidden h-11 items-center px-3 text-sm font-medium text-ink-2 hover:text-ink sm:mr-auto sm:inline-flex"
+            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-control)] px-3 text-sm font-medium text-ink-2 hover:bg-surface-2 hover:text-ink active:bg-surface-3 select-none touch-manipulation sm:mr-auto sm:h-11 sm:justify-start"
           >
             Cancel
           </Link>
@@ -592,12 +592,13 @@ export function PurchaseForm(props: Props) {
               variant="secondary"
               disabled={saving !== null}
               onClick={() => handleSave(true)}
+              className="w-full sm:w-auto"
             >
               {saving === "another" && <LoaderCircle className="animate-spin" aria-hidden="true" />}
               {saving === "another" ? "Saving…" : "Save & add another"}
             </Button>
           )}
-          <Button type="submit" disabled={saving !== null}>
+          <Button type="submit" disabled={saving !== null} className="w-full sm:w-auto">
             {saving === "save" && <LoaderCircle className="animate-spin" aria-hidden="true" />}
             {saving === "save" ? "Saving…" : initial ? "Save changes" : "Save purchase"}
           </Button>

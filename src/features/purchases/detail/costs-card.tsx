@@ -91,12 +91,12 @@ export function CostsCard({
                 >
                   <Badge tone={cost.paid ? "success" : "danger"}>{cost.paid ? "Paid" : "Unpaid"}</Badge>
                 </button>
-                <div className="flex">
+                <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => setEditing(cost)}
                     aria-label={`Edit ${COST_TYPE_LABEL[cost.type]} cost`}
-                    className="grid size-9 place-items-center rounded-lg text-ink-3 hover:bg-surface-2 hover:text-ink"
+                    className="grid size-10 place-items-center rounded-lg text-ink-3 hover:bg-surface-2 hover:text-ink active:bg-surface-3 select-none touch-manipulation sm:size-9"
                   >
                     <Pencil className="size-4" aria-hidden="true" />
                   </button>
@@ -104,7 +104,7 @@ export function CostsCard({
                     type="button"
                     onClick={() => setRemoving(cost)}
                     aria-label={`Remove ${COST_TYPE_LABEL[cost.type]} cost`}
-                    className="grid size-9 place-items-center rounded-lg text-ink-3 hover:bg-danger-soft hover:text-danger"
+                    className="grid size-10 place-items-center rounded-lg text-ink-3 hover:bg-danger-soft hover:text-danger active:bg-danger-soft/80 select-none touch-manipulation sm:size-9"
                   >
                     <Trash2 className="size-4" aria-hidden="true" />
                   </button>

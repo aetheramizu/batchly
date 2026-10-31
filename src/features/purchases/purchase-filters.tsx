@@ -47,8 +47,8 @@ export function PurchaseTabs({
             aria-selected={selected}
             onClick={() => update({ tab: tab.value === "all" ? null : tab.value })}
             className={cn(
-              "flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-medium whitespace-nowrap transition-colors sm:flex-none",
-              selected ? "bg-surface text-ink shadow-sm" : "text-ink-2 hover:text-ink",
+              "flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-medium whitespace-nowrap select-none touch-manipulation transition-colors sm:flex-none",
+              selected ? "bg-surface text-ink shadow-sm" : "text-ink-2 hover:text-ink active:text-ink",
             )}
           >
             {tab.label}
@@ -115,23 +115,23 @@ export function PurchaseFilterControls({
       </div>
 
       {chips.length > 0 && (
-        <div className="flex basis-full flex-wrap items-center gap-2">
+        <div className="flex basis-full flex-wrap items-center gap-1.5 pt-0.5 sm:gap-2">
           {chips.map((chip) => (
             <button
               key={chip.key}
               type="button"
               onClick={() => update({ [chip.key]: null })}
-              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-line bg-surface pr-2 pl-3 text-sm text-ink hover:border-line-strong"
+              className="inline-flex h-7.5 min-h-[30px] items-center gap-1.5 rounded-full border border-line bg-surface pr-2 pl-2.5 text-xs font-medium text-ink select-none touch-manipulation transition-colors hover:border-line-strong hover:bg-surface-2 active:scale-[0.98] sm:h-8 sm:min-h-8 sm:pl-3 sm:text-sm"
               aria-label={`Remove filter: ${chip.label}`}
             >
-              {chip.label}
+              <span>{chip.label}</span>
               <X className="size-3.5 text-ink-3" aria-hidden="true" />
             </button>
           ))}
           <button
             type="button"
             onClick={() => update({ country: null, source: null, status: null, payment: null })}
-            className="h-8 px-1 text-sm font-medium text-accent-ink hover:underline"
+            className="inline-flex h-7.5 min-h-[30px] items-center px-1.5 text-xs font-medium text-accent-ink hover:underline select-none touch-manipulation sm:h-8 sm:min-h-8 sm:text-sm"
           >
             Clear filters
           </button>

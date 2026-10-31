@@ -97,12 +97,12 @@ export default async function PurchasesPage({ searchParams }: PageProps<"/purcha
         </Card>
       ) : (
         <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
             <PurchaseTabs current={filters.tab} counts={counts} />
             <SearchInput
               label="Search purchases"
               placeholder="Search item, artist, source or batch"
-              className="min-w-0 flex-1 basis-64"
+              className="min-w-0 flex-1 basis-40 sm:basis-64"
             />
             <PurchaseFilterControls filters={filters} sources={sources ?? []} />
           </div>

@@ -15,6 +15,7 @@ export function PurchaseRow({
   from,
   hideContext,
   showStale = true,
+  compact = false,
 }: {
   purchase: PurchaseView;
   /** Back-navigation context for Purchase Detail, e.g. "batch:<id>". */
@@ -22,6 +23,8 @@ export function PurchaseRow({
   /** Hide source/country/batch when the surrounding page already shows it. */
   hideContext?: boolean;
   showStale?: boolean;
+  /** Compact presentation for dashboard: minimal metadata, no financial stats, optimized for mobile tapping */
+  compact?: boolean;
 }) {
   const href = from
     ? `/purchases/${purchase.id}?from=${encodeURIComponent(from)}`
@@ -32,6 +35,52 @@ export function PurchaseRow({
       : purchase.purchase_origin === "TAKEN_OS"
         ? "TAKEN"
         : null;
+
+  if (compact) {
+    return (
+      <li>
+        <Link
+          href={href}
+          className="group flex min-h-14 items-center gap-3 px-4 py-3 transition-colors hover:bg-surface-2/60 active:bg-surface-2 focus-visible:-outline-offset-2 sm:px-5"
+        >
+          <PurchaseThumb src={purchase.imageSrc} alt="" size="sm" />
+
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-baseline gap-2">
+              <p className="truncate text-sm font-medium text-ink sm:text-[15px]">
+                {purchase.item_name}
+              </p>
+              {purchase.artist_group && (
+                <span className="hidden shrink-0 truncate text-xs text-ink-3 sm:inline">
+                  {purchase.artist_group}
+                </span>
+              )}
+            </div>
+            <p className="mt-0.5 truncate text-xs text-ink-3">
+              {purchase.artist_group && (
+                <span className="text-ink-2 sm:hidden">{purchase.artist_group} · </span>
+              )}
+              {purchase.source.name}
+              {purchase.batch ? (
+                <> · Batch {purchase.batch.batch_number}</>
+              ) : (
+                <> · {COUNTRY_LABEL[purchase.effectiveCountry]}</>
+              )}
+            </p>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            <StatusBadge status={purchase.status} />
+            {osKind && <OsBadge kind={osKind} className="hidden sm:inline-flex" />}
+            <ChevronRight
+              className="size-4 shrink-0 text-ink-3 transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </div>
+        </Link>
+      </li>
+    );
+  }
 
   return (
     <li>
