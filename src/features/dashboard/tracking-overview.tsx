@@ -36,7 +36,7 @@ export function TrackingOverview({
   const max = Math.max(...rows.map((r) => r.purchases), 1);
 
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <CardHeader
         title="Where things are"
         description="Group Orders follow their batch. Direct Seller purchases are tracked one by one."
@@ -46,7 +46,7 @@ export function TrackingOverview({
           <li key={row.status}>
             <Link
               href={`/purchases?status=${row.status}`}
-              className="group grid grid-cols-[minmax(0,9rem)_1fr_auto] items-center gap-x-3 rounded-[var(--radius-control)] px-3 py-2.5 transition-colors hover:bg-surface-2/60 sm:grid-cols-[10rem_1fr_auto]"
+              className="group grid grid-cols-[minmax(0,8.5rem)_1fr_auto] items-center gap-x-3 rounded-[var(--radius-control)] px-3 py-2.5 transition-colors hover:bg-surface-2/60 active:bg-surface-2 sm:grid-cols-[10rem_1fr_auto]"
             >
               <span className="min-w-0">
                 <span className="block truncate text-sm font-medium text-ink">
