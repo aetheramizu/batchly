@@ -18,8 +18,8 @@ export type PurchaseFilters = {
 };
 
 export const TABS: { value: PurchaseTab; label: string }[] = [
-  { value: "all", label: "All" },
   { value: "active", label: "Active" },
+  { value: "all", label: "All" },
   { value: "delivered", label: "Delivered" },
   { value: "os", label: "OS" },
 ];
@@ -56,7 +56,7 @@ export function parsePurchaseFilters(params: Params): PurchaseFilters {
   const sort = one(params.sort);
   return {
     q: one(params.q).trim().slice(0, 100),
-    tab: TABS.some((t) => t.value === tab) ? (tab as PurchaseTab) : "all",
+    tab: TABS.some((t) => t.value === tab) ? (tab as PurchaseTab) : "active",
     country: COUNTRY.includes(country) ? (country as Country) : "",
     source: one(params.source),
     status: TRACKING.includes(status) ? (status as TrackingStatus) : "",
@@ -89,7 +89,7 @@ function matchesSearch(p: PurchaseView, q: string) {
     p.item_name,
     p.artist_group ?? "",
     p.source.name,
-    p.batch ? `batch ${p.batch.batch_number}` : "",
+    p.batch ? `${p.batch.batch_number} batch ${p.batch.batch_number}` : "",
   ]
     .join(" ")
     .toLowerCase();

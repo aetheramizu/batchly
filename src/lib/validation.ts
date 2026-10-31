@@ -161,7 +161,7 @@ export function validateSourceDraft(draft: SourceDraft): FieldErrors {
 
 export interface BatchDraft {
   batchNumber: string;
-  batchDate: string;
+  batchDate?: string | null;
   country?: Country | string;
 }
 
@@ -169,10 +169,12 @@ export function validateBatchDraft(draft: BatchDraft): FieldErrors {
   const errors: FieldErrors = {};
   const batchNumber = draft.batchNumber.trim();
   if (!batchNumber) errors.batchNumber = "Batch number is required.";
-  else if (batchNumber.length > 50)
-    errors.batchNumber = "Keep the batch number under 50 characters.";
-  if (!draft.batchDate) errors.batchDate = "Batch date is required.";
-  else if (!isISODate(draft.batchDate)) errors.batchDate = "Enter a valid date.";
+  else if (batchNumber.length > MAX_TEXT)
+    errors.batchNumber = `Keep the batch name under ${MAX_TEXT} characters.`;
+  const batchDate = draft.batchDate?.trim() ?? "";
+  if (batchDate && !isISODate(batchDate)) {
+    errors.batchDate = "Enter a valid date.";
+  }
   if (draft.country !== undefined && !COUNTRY_VALUES.includes(draft.country)) {
     errors.country = "Country is required.";
   }

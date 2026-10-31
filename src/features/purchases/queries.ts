@@ -158,7 +158,7 @@ export async function getPurchaseFormOptions(supabase: Client) {
       .select(
         "id, source_id, batch_number, country, status, last_updated_at, batch_date, purchases(archived_at)",
       )
-      .order("batch_date", { ascending: false }),
+      .order("created_at", { ascending: false }),
   ]);
   if (sourcesResult.error) throw sourcesResult.error;
   if (batchesResult.error) throw batchesResult.error;

@@ -2,7 +2,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { StaleBadge, StatusBadge } from "@/components/ui/badge";
 import { COUNTRY_CODE, COUNTRY_LABEL } from "@/lib/domain";
-import { pluralize } from "@/lib/format";
+import { formatBatchName, pluralize } from "@/lib/format";
 import type { BatchView } from "./queries";
 
 /**
@@ -22,9 +22,7 @@ export function BatchRow({
     ? `/batches/${batch.id}?from=${encodeURIComponent(from)}`
     : `/batches/${batch.id}`;
 
-  const displayName = /^batch\b/i.test(batch.batch_number)
-    ? batch.batch_number
-    : `Batch ${batch.batch_number}`;
+  const displayName = formatBatchName(batch.batch_number);
 
   return (
     <li>

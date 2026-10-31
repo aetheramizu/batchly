@@ -11,7 +11,7 @@ import { getBatchWithPurchases } from "@/features/batches/queries";
 import { PurchaseRow } from "@/features/purchases/purchase-row";
 import { requireUser } from "@/lib/auth";
 import { COUNTRY_LABEL, SOURCE_TYPE_LABEL } from "@/lib/domain";
-import { formatDate, formatDaysAgo, formatRupiah, pluralize } from "@/lib/format";
+import { formatBatchName, formatDate, formatDaysAgo, formatRupiah, pluralize } from "@/lib/format";
 import { isUuid } from "@/lib/validation";
 
 export const metadata: Metadata = { title: "Batch" };
@@ -62,11 +62,12 @@ export default async function BatchDetailPage({
                 · {SOURCE_TYPE_LABEL[batch.source.type]} · {batch.source.platform}
               </span>
             </p>
-            <h1 className="tabular mt-1 font-display text-2xl leading-tight font-bold tracking-[-0.02em] sm:text-[28px]">
-              Batch {batch.batch_number}
+            <h1 className="mt-1 font-display text-2xl leading-tight font-bold tracking-[-0.02em] break-words sm:text-[28px]">
+              {formatBatchName(batch.batch_number)}
             </h1>
             <p className="mt-1 text-[15px] text-ink-2">
-              {COUNTRY_LABEL[batch.country]} · {formatDate(batch.batch_date)}
+              {COUNTRY_LABEL[batch.country]}
+              {batch.batch_date && <> · {formatDate(batch.batch_date)}</>}
             </p>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-row">

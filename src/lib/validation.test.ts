@@ -1,8 +1,15 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { formatDate, formatMoneyInput, formatRupiah, parseMoneyInput } from "./format.ts";
+import {
+  formatBatchName,
+  formatDate,
+  formatMoneyInput,
+  formatRupiah,
+  parseMoneyInput,
+} from "./format.ts";
 import {
   hasErrors,
+  validateBatchDraft,
   validateOsDraft,
   validatePurchaseDraft,
   type PurchaseDraft,
@@ -101,4 +108,26 @@ test("money formatting", () => {
   assert.equal(formatDate("2026-09-12"), "12 Sep 2026");
   // 20:13 UTC is already the next day in Jakarta.
   assert.equal(formatDate("2026-09-13T20:13:45+00:00"), "14 Sep 2026");
+  assert.equal(formatDate(null), "—");
+  assert.equal(formatDate(""), "—");
+});
+
+test("batch draft allows optional date and descriptive names", () => {
+  assert.equal(
+    hasErrors(validateBatchDraft({ batchNumber: "Batch 3 SEASON GREETINGS", batchDate: "" })),
+    false,
+  );
+  assert.equal(
+    hasErrors(validateBatchDraft({ batchNumber: "42", batchDate: "2026-09-12" })),
+    false,
+  );
+  assert.ok(validateBatchDraft({ batchNumber: "42", batchDate: "not-a-date" }).batchDate);
+  assert.ok(validateBatchDraft({ batchNumber: "   ", batchDate: "" }).batchNumber);
+});
+
+test("formatBatchName handles numbered and descriptive names", () => {
+  assert.equal(formatBatchName("42"), "Batch 42");
+  assert.equal(formatBatchName("3 SEASON GREETINGS"), "Batch 3 SEASON GREETINGS");
+  assert.equal(formatBatchName("Batch 3 SEASON GREETINGS"), "Batch 3 SEASON GREETINGS");
+  assert.equal(formatBatchName("SEASON GREETINGS"), "SEASON GREETINGS");
 });

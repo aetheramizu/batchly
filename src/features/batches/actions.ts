@@ -16,7 +16,7 @@ export async function createBatch(input: {
   sourceId: string;
   country: string;
   batchNumber: string;
-  batchDate: string;
+  batchDate?: string | null;
 }): Promise<ActionResult<BatchOption>> {
   const fieldErrors = validateBatchDraft(input);
   if (hasErrors(fieldErrors)) return fail("Check the highlighted fields.", fieldErrors);
@@ -35,13 +35,15 @@ export async function createBatch(input: {
     return fail("Batches can only be created for Group Order sources.");
   }
 
+  const batchDate = input.batchDate?.trim() || null;
+
   const { data, error } = await user.supabase
     .from("batches")
     .insert({
       source_id: input.sourceId,
       country: input.country as Country,
       batch_number: input.batchNumber.trim(),
-      batch_date: input.batchDate,
+      batch_date: batchDate,
     })
     .select("id, source_id, batch_number, country, status, last_updated_at, batch_date")
     .single();
@@ -86,7 +88,7 @@ export async function updateBatchStatus(
 
 export async function updateBatchDetails(
   batchId: string,
-  input: { batchNumber: string; batchDate: string; notes: string },
+  input: { batchNumber: string; batchDate?: string | null; notes: string },
 ): Promise<ActionResult> {
   const fieldErrors = validateBatchDraft(input);
   if (input.notes.length > MAX_NOTES) fieldErrors.notes = `Keep notes under ${MAX_NOTES} characters.`;
@@ -95,11 +97,13 @@ export async function updateBatchDetails(
   const user = await getActionUser();
   if (!user) return fail("Your session has ended. Sign in again.");
 
+  const batchDate = input.batchDate?.trim() || null;
+
   const { data, error } = await user.supabase
     .from("batches")
     .update({
       batch_number: input.batchNumber.trim(),
-      batch_date: input.batchDate,
+      batch_date: batchDate,
       notes: input.notes.trim() || null,
     })
     .eq("id", batchId)

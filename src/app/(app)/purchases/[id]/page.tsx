@@ -15,7 +15,7 @@ import { TrackingCard } from "@/features/purchases/detail/tracking-card";
 import { getPurchase, listCosts } from "@/features/purchases/queries";
 import { requireUser } from "@/lib/auth";
 import { COUNTRY_LABEL, SOURCE_TYPE_LABEL } from "@/lib/domain";
-import { formatDate, formatRupiah } from "@/lib/format";
+import { formatBatchName, formatDate, formatRupiah } from "@/lib/format";
 import { isUuid } from "@/lib/validation";
 
 export const metadata: Metadata = { title: "Purchase" };
@@ -107,7 +107,7 @@ export default async function PurchaseDetailPage({
                     href={`/batches/${purchase.batch.id}`}
                     className="font-medium text-accent-ink hover:underline"
                   >
-                    Batch {purchase.batch.batch_number}
+                    {formatBatchName(purchase.batch.batch_number)}
                   </Link>
                 </>
               )}
@@ -120,22 +120,25 @@ export default async function PurchaseDetailPage({
                 {formatRupiah(purchase.price)}
               </p>
             </div>
-            <PaymentBadge status={purchase.payment} remaining={purchase.remaining} />
+            <PaymentBadge status={purchase.payment} />
           </div>
         </div>
         {!archivedAt && (
-          <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-line pt-4">
-            <ButtonLink href={`/purchases/${purchase.id}/edit`} variant="secondary" size="sm">
+          <div className="mt-5 grid grid-cols-[1fr_auto] items-center gap-2 border-t border-line pt-4 sm:flex sm:flex-wrap sm:justify-start sm:gap-2.5">
+            <ButtonLink
+              href={`/purchases/${purchase.id}/edit`}
+              variant="primary"
+              size="sm"
+              className="w-full sm:w-auto"
+            >
               <Pencil aria-hidden="true" />
               Edit purchase
             </ButtonLink>
-            <div className="ml-auto">
-              <ArchiveButton
-                purchaseId={purchase.id}
-                itemName={purchase.item_name}
-                archived={false}
-              />
-            </div>
+            <ArchiveButton
+              purchaseId={purchase.id}
+              itemName={purchase.item_name}
+              archived={false}
+            />
           </div>
         )}
       </Card>
@@ -196,7 +199,7 @@ export default async function PurchaseDetailPage({
                     href={`/batches/${purchase.batch.id}`}
                     className="text-accent-ink hover:underline"
                   >
-                    Batch {purchase.batch.batch_number}
+                    {formatBatchName(purchase.batch.batch_number)}
                   </Link>
                 </DetailRow>
               )}

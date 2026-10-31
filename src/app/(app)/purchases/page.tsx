@@ -65,6 +65,11 @@ export default async function PurchasesPage({ searchParams }: PageProps<"/purcha
   }
 
   const hasAnyPurchase = purchases.length > 0;
+  const hasSecondaryFilters = Boolean(
+    filters.q || filters.country || filters.source || filters.status || filters.payment,
+  );
+  const clearFiltersHref =
+    filters.tab === "active" ? "/purchases" : `/purchases?tab=${filters.tab}`;
 
   return (
     <>
@@ -112,16 +117,43 @@ export default async function PurchasesPage({ searchParams }: PageProps<"/purcha
               <p aria-live="polite">{pluralize(visible.length, "purchase")}</p>
             </div>
             {visible.length === 0 ? (
-              <EmptyState
-                icon={<SearchX />}
-                title="No purchases match your filters"
-                description="Try a different search or remove a filter."
-                action={
-                  <ButtonLink href="/purchases" variant="secondary">
-                    Clear filters
-                  </ButtonLink>
-                }
-              />
+              hasSecondaryFilters ? (
+                <EmptyState
+                  icon={<SearchX />}
+                  title="No purchases match your filters"
+                  description="Try a different search or remove a filter."
+                  action={
+                    <ButtonLink href={clearFiltersHref} variant="secondary">
+                      Clear filters
+                    </ButtonLink>
+                  }
+                />
+              ) : filters.tab === "active" ? (
+                <EmptyState
+                  icon={<ShoppingBag />}
+                  title="No active purchases"
+                  description="All your purchases have been delivered or given OS."
+                  action={
+                    <ButtonLink href="/purchases?tab=all" variant="secondary">
+                      View all purchases
+                    </ButtonLink>
+                  }
+                />
+              ) : (
+                <EmptyState
+                  icon={<ShoppingBag />}
+                  title={
+                    filters.tab === "delivered"
+                      ? "No delivered purchases yet"
+                      : "No OS purchases"
+                  }
+                  description={
+                    filters.tab === "delivered"
+                      ? "Purchases will appear here once their tracking reaches Delivered."
+                      : "Purchases you take over or give away through OS will appear here."
+                  }
+                />
+              )
             ) : (
               <ul className="divide-y divide-line">
                 {visible.map((purchase) => (

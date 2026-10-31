@@ -3,7 +3,7 @@ import Link from "next/link";
 import { OsBadge, PaymentBadge, StaleBadge, StatusBadge } from "@/components/ui/badge";
 import { PurchaseThumb } from "@/components/ui/purchase-thumb";
 import { COUNTRY_LABEL, SOURCE_TYPE_LABEL } from "@/lib/domain";
-import { formatRupiah } from "@/lib/format";
+import { formatBatchName, formatRupiah } from "@/lib/format";
 import type { PurchaseView } from "./queries";
 
 /**
@@ -62,7 +62,7 @@ export function PurchaseRow({
               )}
               {purchase.source.name}
               {purchase.batch ? (
-                <> · Batch {purchase.batch.batch_number}</>
+                <> · {formatBatchName(purchase.batch.batch_number)}</>
               ) : (
                 <> · {COUNTRY_LABEL[purchase.effectiveCountry]}</>
               )}
@@ -106,7 +106,7 @@ export function PurchaseRow({
                 {" "}
                 · {COUNTRY_LABEL[purchase.effectiveCountry]}
                 {purchase.batch ? (
-                  <> · Batch {purchase.batch.batch_number}</>
+                  <> · {formatBatchName(purchase.batch.batch_number)}</>
                 ) : (
                   <span className="sr-only">, {SOURCE_TYPE_LABEL[purchase.source.type]}</span>
                 )}

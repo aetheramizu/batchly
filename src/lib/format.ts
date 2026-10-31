@@ -47,12 +47,28 @@ const MONTHS = [
 ];
 
 /** "2026-09-12" (DATE) or timestamp → "12 Sep 2026". Timestamps use Indonesia time. */
-export function formatDate(value: string): string {
+export function formatDate(value: string | null | undefined): string {
+  if (!value) return "—";
   const isTimestamp = /[T ]\d{2}:\d{2}/.test(value);
   const datePart = isTimestamp ? todayISODate(new Date(value)) : value.slice(0, 10);
   const [year, month, day] = datePart.split("-").map(Number);
   if (!year || !month || !day) return value;
   return `${day} ${MONTHS[month - 1]} ${year}`;
+}
+
+/**
+ * Formats a stored batch identifier/name for display.
+ * - "42" → "Batch 42"
+ * - "3 SEASON GREETINGS" → "Batch 3 SEASON GREETINGS"
+ * - "Batch 3 SEASON GREETINGS" → "Batch 3 SEASON GREETINGS"
+ * - "SEASON GREETINGS" → "SEASON GREETINGS"
+ */
+export function formatBatchName(batchNumber: string): string {
+  const trimmed = batchNumber.trim();
+  if (!trimmed) return "Batch";
+  if (/^batch\b/i.test(trimmed)) return trimmed;
+  if (/^#?\d/.test(trimmed)) return `Batch ${trimmed}`;
+  return trimmed;
 }
 
 /** Relative wording for a number of elapsed days. */

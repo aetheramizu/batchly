@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/surface";
 import { TrackingRail } from "@/components/ui/tracking-rail";
 import type { TrackingStatus } from "@/lib/domain";
-import { formatDate, formatDaysAgo, pluralize } from "@/lib/format";
+import { formatBatchName, formatDate, formatDaysAgo, pluralize } from "@/lib/format";
 import { updateBatchStatus } from "@/features/batches/actions";
 import { StatusDialog } from "@/features/tracking/status-dialog";
 import { updatePurchaseTracking } from "../actions";
@@ -40,7 +40,7 @@ export function TrackingCard({
         title="Tracking"
         description={
           batch
-            ? `Follows Batch ${batch.number}, shared by ${pluralize(batch.purchaseCount, "purchase")}.`
+            ? `Follows ${formatBatchName(batch.number)}, shared by ${pluralize(batch.purchaseCount, "purchase")}.`
             : "Tracked on this purchase only."
         }
         action={
@@ -65,12 +65,12 @@ export function TrackingCard({
             href={`/batches/${batch.id}?from=${encodeURIComponent(`purchase:${purchaseId}`)}`}
             className="flex items-center gap-3 rounded-[var(--radius-control)] bg-surface-2 px-3.5 py-3 text-sm transition-colors hover:bg-surface-3"
           >
-            <Layers className="size-4 text-ink-3" aria-hidden="true" />
-            <span className="flex-1">
-              <span className="font-medium">Batch {batch.number}</span>
+            <Layers className="size-4 shrink-0 text-ink-3" aria-hidden="true" />
+            <span className="min-w-0 flex-1 break-words">
+              <span className="font-medium">{formatBatchName(batch.number)}</span>
               <span className="text-ink-3"> · {pluralize(batch.purchaseCount, "purchase")}</span>
             </span>
-            <span className="font-medium text-accent-ink">View batch</span>
+            <span className="shrink-0 font-medium text-accent-ink">View batch</span>
           </Link>
         )}
       </div>
@@ -80,7 +80,7 @@ export function TrackingCard({
         open={open}
         onClose={() => setOpen(false)}
         current={status}
-        title={batch ? `Update Batch ${batch.number}` : "Update tracking"}
+        title={batch ? `Update ${formatBatchName(batch.number)}` : "Update tracking"}
         description={
           batch
             ? `All ${pluralize(batch.purchaseCount, "purchase")} in this batch will show the new status.`

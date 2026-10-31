@@ -88,9 +88,16 @@ test("combined filters must all match", () => {
 
 test("invalid params fall back to defaults", () => {
   const f = parsePurchaseFilters({ tab: "nope", status: "LOST", sort: "x" });
-  assert.equal(f.tab, "all");
+  assert.equal(f.tab, "active");
   assert.equal(f.status, "");
   assert.equal(f.sort, "newest");
+});
+
+test("explicit tab param is preserved", () => {
+  assert.equal(parsePurchaseFilters({}).tab, "active");
+  assert.equal(parsePurchaseFilters({ tab: "all" }).tab, "all");
+  assert.equal(parsePurchaseFilters({ tab: "delivered" }).tab, "delivered");
+  assert.equal(parsePurchaseFilters({ tab: "os" }).tab, "os");
 });
 
 test("sorting", () => {

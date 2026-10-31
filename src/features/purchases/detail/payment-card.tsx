@@ -1,13 +1,16 @@
 "use client";
 
+import { CircleCheck } from "lucide-react";
 import { useState } from "react";
+import { PaymentBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { describedBy, Field, FormAlert } from "@/components/ui/field";
 import { MoneyInput } from "@/components/ui/money-input";
 import { Card, CardHeader } from "@/components/ui/surface";
 import { useToast } from "@/components/ui/toast";
-import { formatMoneyInput, parseMoneyInput } from "@/lib/format";
+import { remainingAmount } from "@/lib/domain";
+import { formatMoneyInput, formatRupiah, parseMoneyInput } from "@/lib/format";
 import { updatePurchasePayment } from "../actions";
 import { PaymentSummary } from "../payment-summary";
 
@@ -29,6 +32,8 @@ export function PaymentCard({
   const toast = useToast();
   const priceLabel = takenOs ? "OS price" : "Price";
   const fieldError = error.startsWith("Paid amount") ? error : undefined;
+  const remaining = remainingAmount(price, paid);
+  const isPaid = remaining === 0;
 
   function openDialog() {
     setValue(formatMoneyInput(String(paid)));
@@ -36,17 +41,28 @@ export function PaymentCard({
     setOpen(true);
   }
 
-  async function save() {
+  async function saveAmount(amount: number) {
     if (saving) return;
-    const amount = parseMoneyInput(value);
-    if (amount === null) return setError("Paid amount is required.");
-    if (amount > price) return setError(`Paid amount cannot exceed the ${takenOs ? "OS price" : "price"}.`);
     setSaving(true);
     const result = await updatePurchasePayment(purchaseId, amount);
     setSaving(false);
-    if (!result.ok) return setError(result.fieldErrors?.paidAmount ?? result.error);
-    toast.success("Payment updated");
+    if (!result.ok) {
+      const msg = result.fieldErrors?.paidAmount ?? result.error;
+      if (open) setError(msg);
+      else toast.error(msg);
+      return;
+    }
+    toast.success(amount >= price ? "Marked paid in full" : "Payment updated");
     setOpen(false);
+  }
+
+  async function save() {
+    const amount = parseMoneyInput(value);
+    if (amount === null) return setError("Paid amount is required.");
+    if (amount > price) {
+      return setError(`Paid amount cannot exceed the ${takenOs ? "OS price" : "price"}.`);
+    }
+    await saveAmount(amount);
   }
 
   return (
@@ -55,13 +71,46 @@ export function PaymentCard({
         title="Payment"
         description={takenOs ? "What you pay to take over this slot." : undefined}
         action={
-          <Button variant="secondary" size="sm" onClick={openDialog}>
-            Update payment
-          </Button>
+          isPaid ? (
+            <PaymentBadge status="PAID" />
+          ) : (
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => saveAmount(price)}
+                disabled={saving}
+              >
+                Mark paid in full
+              </Button>
+              <Button variant="primary" size="sm" onClick={openDialog} disabled={saving}>
+                Update payment
+              </Button>
+            </div>
+          )
         }
       />
       <div className="px-5 pb-5">
-        <PaymentSummary total={price} paid={paid} totalLabel={priceLabel} />
+        {isPaid ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-control)] bg-surface-2 px-4 py-3.5">
+            <div className="flex items-center gap-2.5">
+              <CircleCheck className="size-4 shrink-0 text-success" aria-hidden="true" />
+              <p className="text-sm text-ink-2">
+                Paid in full ·{" "}
+                <span className="tabular font-semibold text-ink">{formatRupiah(paid)}</span>
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={openDialog}
+              className="text-xs font-medium text-ink-3 hover:text-ink hover:underline select-none touch-manipulation"
+            >
+              Adjust
+            </button>
+          </div>
+        ) : (
+          <PaymentSummary total={price} paid={paid} totalLabel={priceLabel} />
+        )}
       </div>
 
       <Dialog

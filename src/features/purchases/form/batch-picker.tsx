@@ -8,7 +8,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { describedBy, Field, FormAlert, Input } from "@/components/ui/field";
 import { cn } from "@/lib/cn";
 import { COUNTRY_LABEL, type Country } from "@/lib/domain";
-import { pluralize, todayISODate } from "@/lib/format";
+import { formatBatchName, formatDate, pluralize } from "@/lib/format";
 import type { FieldErrors } from "@/lib/validation";
 import { createBatch } from "@/features/batches/actions";
 import type { BatchOption, SourceSummary } from "../queries";
@@ -64,14 +64,14 @@ export function BatchPicker({
           </Button>
         </div>
       ) : (
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-2.5 sm:grid-cols-2">
           {batches.map((batch) => {
             const selected = batch.id === value;
             return (
               <label
                 key={batch.id}
                 className={cn(
-                  "flex min-h-16 cursor-pointer items-center gap-3 rounded-[var(--radius-control)] border px-3 py-2.5 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
+                  "flex min-h-16 cursor-pointer items-start gap-3 rounded-[var(--radius-control)] border px-3.5 py-3 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
                   selected
                     ? "border-accent bg-accent-soft"
                     : "border-line bg-surface hover:border-line-strong",
@@ -86,16 +86,19 @@ export function BatchPicker({
                   className="sr-only"
                 />
                 <span className="min-w-0 flex-1">
-                  <span className="tabular block font-medium">Batch {batch.batch_number}</span>
-                  <span className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-3">
-                    {pluralize(batch.purchaseCount, "purchase")}
+                  <span className="block font-display text-[15px] leading-snug font-semibold text-ink break-words">
+                    {formatBatchName(batch.batch_number)}
+                  </span>
+                  <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-3">
                     <StatusBadge status={batch.status} />
+                    <span>{pluralize(batch.purchaseCount, "purchase")}</span>
+                    {batch.batch_date && <span>· {formatDate(batch.batch_date)}</span>}
                   </span>
                 </span>
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "grid size-5 shrink-0 place-items-center rounded-full border",
+                    "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border",
                     selected ? "border-accent bg-accent text-white" : "border-line-strong",
                   )}
                 >
@@ -144,7 +147,7 @@ function CreateBatchForm({
   onCreated: (batch: BatchOption) => void;
 }) {
   const [batchNumber, setBatchNumber] = useState("");
-  const [batchDate, setBatchDate] = useState(todayISODate());
+  const [batchDate, setBatchDate] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -167,25 +170,25 @@ function CreateBatchForm({
     <div className="flex flex-col gap-4">
       {formError && <FormAlert>{formError}</FormAlert>}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field id="batch-number" label="Batch number" required error={errors.batchNumber}>
+        <Field id="batch-number" label="Batch name / number" required error={errors.batchNumber}>
           <Input
             id="batch-number"
             value={batchNumber}
             onChange={(event) => setBatchNumber(event.target.value)}
-            placeholder="e.g. 42"
+            placeholder="e.g. 42 or Batch 3 SEASON GREETINGS"
             autoFocus
-            className="tabular"
             aria-invalid={Boolean(errors.batchNumber)}
             aria-describedby={describedBy("batch-number", errors.batchNumber)}
           />
         </Field>
-        <Field id="batch-date" label="Batch date" required error={errors.batchDate}>
+        <Field id="batch-date" label="Batch date" optional error={errors.batchDate}>
           <Input
             id="batch-date"
             type="date"
             value={batchDate}
             onChange={(event) => setBatchDate(event.target.value)}
             aria-invalid={Boolean(errors.batchDate)}
+            aria-describedby={describedBy("batch-date", errors.batchDate)}
           />
         </Field>
       </div>

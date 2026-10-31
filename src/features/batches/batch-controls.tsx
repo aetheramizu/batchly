@@ -7,7 +7,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { describedBy, Field, FormAlert, Input, Textarea } from "@/components/ui/field";
 import { useToast } from "@/components/ui/toast";
 import type { TrackingStatus } from "@/lib/domain";
-import { pluralize } from "@/lib/format";
+import { formatBatchName, pluralize } from "@/lib/format";
 import type { FieldErrors } from "@/lib/validation";
 import { StatusDialog } from "@/features/tracking/status-dialog";
 import { updateBatchDetails, updateBatchStatus } from "./actions";
@@ -39,7 +39,7 @@ export function UpdateBatchStatusButton({
         open={open}
         onClose={() => setOpen(false)}
         current={status}
-        title={`Update Batch ${batchNumber}`}
+        title={`Update ${formatBatchName(batchNumber)}`}
         description={
           purchaseCount > 0
             ? `All ${pluralize(purchaseCount, "purchase")} in this batch will show the new status.`
@@ -61,7 +61,7 @@ export function EditBatchButton({
 }: {
   batchId: string;
   batchNumber: string;
-  batchDate: string;
+  batchDate: string | null;
   notes: string | null;
   className?: string;
 }) {
@@ -79,9 +79,9 @@ export function EditBatchButton({
         description="Source and country can't change here. Tracking status is updated separately."
       >
         <EditBatchForm
-          key={`${batchNumber}|${batchDate}|${notes}`}
+          key={`${batchNumber}|${batchDate ?? ""}|${notes}`}
           batchId={batchId}
-          initial={{ batchNumber, batchDate, notes: notes ?? "" }}
+          initial={{ batchNumber, batchDate: batchDate ?? "", notes: notes ?? "" }}
           onDone={() => setOpen(false)}
         />
       </Dialog>
@@ -123,22 +123,24 @@ function EditBatchForm({
     <div className="flex flex-col gap-4">
       {formError && <FormAlert>{formError}</FormAlert>}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field id="edit-batch-number" label="Batch number" required error={errors.batchNumber}>
+        <Field id="edit-batch-number" label="Batch name / number" required error={errors.batchNumber}>
           <Input
             id="edit-batch-number"
             value={values.batchNumber}
             onChange={(e) => setValues({ ...values, batchNumber: e.target.value })}
-            className="tabular"
+            placeholder="e.g. 42 or Batch 3 SEASON GREETINGS"
             aria-invalid={Boolean(errors.batchNumber)}
             aria-describedby={describedBy("edit-batch-number", errors.batchNumber)}
           />
         </Field>
-        <Field id="edit-batch-date" label="Batch date" required error={errors.batchDate}>
+        <Field id="edit-batch-date" label="Batch date" optional error={errors.batchDate}>
           <Input
             id="edit-batch-date"
             type="date"
             value={values.batchDate}
             onChange={(e) => setValues({ ...values, batchDate: e.target.value })}
+            aria-invalid={Boolean(errors.batchDate)}
+            aria-describedby={describedBy("edit-batch-date", errors.batchDate)}
           />
         </Field>
       </div>

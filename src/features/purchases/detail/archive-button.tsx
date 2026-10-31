@@ -6,16 +6,19 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
+import { cn } from "@/lib/cn";
 import { setPurchaseArchived } from "../actions";
 
 export function ArchiveButton({
   purchaseId,
   itemName,
   archived,
+  className,
 }: {
   purchaseId: string;
   itemName: string;
   archived: boolean;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -48,7 +51,12 @@ export function ArchiveButton({
 
   return (
     <>
-      <Button variant="ghost" onClick={() => setOpen(true)}>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => setOpen(true)}
+        className={cn("text-ink-2", className)}
+      >
         <Archive aria-hidden="true" />
         Archive
       </Button>

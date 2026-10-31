@@ -60,7 +60,7 @@ export type Database = {
       }
       batches: {
         Row: {
-          batch_date: string
+          batch_date: string | null
           batch_number: string
           country: Database["public"]["Enums"]["country"]
           created_at: string
@@ -73,7 +73,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          batch_date: string
+          batch_date?: string | null
           batch_number: string
           country: Database["public"]["Enums"]["country"]
           created_at?: string
@@ -86,7 +86,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
-          batch_date?: string
+          batch_date?: string | null
           batch_number?: string
           country?: Database["public"]["Enums"]["country"]
           created_at?: string

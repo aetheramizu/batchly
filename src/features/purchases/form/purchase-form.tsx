@@ -22,7 +22,7 @@ import {
   type Country,
   type PurchaseOrigin,
 } from "@/lib/domain";
-import { formatMoneyInput, parseMoneyInput, todayISODate } from "@/lib/format";
+import { formatBatchName, formatMoneyInput, parseMoneyInput, todayISODate } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
 import {
   hasErrors,
@@ -209,6 +209,7 @@ export function PurchaseForm(props: Props) {
 
       if (imageOk) toast.success(initial ? "Purchase updated" : "Purchase added");
       router.push(`/purchases/${purchaseId}`);
+      router.refresh();
     } catch {
       setFormError("Couldn't save this purchase. Check your connection and try again.");
     } finally {
@@ -398,7 +399,7 @@ export function PurchaseForm(props: Props) {
                   setBatches((current) => [created, ...current]);
                   setBatchId(created.id);
                   clearError("batchId");
-                  toast.success(`Batch ${created.batch_number} created`);
+                  toast.success(`${formatBatchName(created.batch_number)} created`);
                 }}
               />
             </div>
@@ -433,7 +434,7 @@ export function PurchaseForm(props: Props) {
           {selectedBatch && (
             <p className="flex flex-wrap items-center gap-2 text-sm text-ink-2">
               <Info className="size-4 text-ink-3" aria-hidden="true" />
-              Tracking follows Batch {selectedBatch.batch_number}
+              Tracking follows {formatBatchName(selectedBatch.batch_number)}
               <StatusBadge status={selectedBatch.status} />
             </p>
           )}
@@ -579,14 +580,12 @@ export function PurchaseForm(props: Props) {
       </Card>
 
       {/* Actions */}
-      <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 -mx-1 rounded-[var(--radius-card)] border border-line bg-surface/95 p-3 shadow-[var(--shadow-float)] backdrop-blur lg:bottom-4">
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end">
-          <Link
-            href={backHref}
-            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-control)] px-3 text-sm font-medium text-ink-2 hover:bg-surface-2 hover:text-ink active:bg-surface-3 select-none touch-manipulation sm:mr-auto sm:h-11 sm:justify-start"
-          >
-            Cancel
-          </Link>
+      <div className="rounded-[var(--radius-card)] border border-line bg-surface p-4 sm:px-5">
+        <div className="flex flex-col gap-2 sm:flex-row-reverse sm:items-center sm:justify-start">
+          <Button type="submit" disabled={saving !== null} className="w-full sm:w-auto">
+            {saving === "save" && <LoaderCircle className="animate-spin" aria-hidden="true" />}
+            {saving === "save" ? "Saving…" : initial ? "Save changes" : "Save purchase"}
+          </Button>
           {!initial && (
             <Button
               variant="secondary"
@@ -598,10 +597,12 @@ export function PurchaseForm(props: Props) {
               {saving === "another" ? "Saving…" : "Save & add another"}
             </Button>
           )}
-          <Button type="submit" disabled={saving !== null} className="w-full sm:w-auto">
-            {saving === "save" && <LoaderCircle className="animate-spin" aria-hidden="true" />}
-            {saving === "save" ? "Saving…" : initial ? "Save changes" : "Save purchase"}
-          </Button>
+          <Link
+            href={backHref}
+            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-control)] px-3 text-sm font-medium text-ink-2 hover:bg-surface-2 hover:text-ink active:bg-surface-3 select-none touch-manipulation sm:mr-auto sm:h-11 sm:justify-start"
+          >
+            Cancel
+          </Link>
         </div>
       </div>
 
@@ -612,7 +613,7 @@ export function PurchaseForm(props: Props) {
         description={
           isGroupOrder
             ? `Its tracking status will come from ${
-                selectedBatch ? `Batch ${selectedBatch.batch_number}` : "the selected batch"
+                selectedBatch ? formatBatchName(selectedBatch.batch_number) : "the selected batch"
               } instead.`
             : `It will no longer belong to a batch. Tracking will be set on this purchase (${TRACKING_STATUS_LABEL[trackingStatus as keyof typeof TRACKING_STATUS_LABEL] ?? "Purchased"}).`
         }

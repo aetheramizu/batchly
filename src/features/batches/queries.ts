@@ -22,7 +22,7 @@ const BATCH_SELECT = `
 type BatchRow = {
   id: string;
   batch_number: string;
-  batch_date: string;
+  batch_date: string | null;
   country: Country;
   status: TrackingStatus;
   last_updated_at: string;

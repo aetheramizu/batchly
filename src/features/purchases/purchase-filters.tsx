@@ -45,7 +45,7 @@ export function PurchaseTabs({
             type="button"
             role="tab"
             aria-selected={selected}
-            onClick={() => update({ tab: tab.value === "all" ? null : tab.value })}
+            onClick={() => update({ tab: tab.value === "active" ? null : tab.value })}
             className={cn(
               "flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-medium whitespace-nowrap select-none touch-manipulation transition-colors sm:flex-none",
               selected ? "bg-surface text-ink shadow-sm" : "text-ink-2 hover:text-ink active:text-ink",
