@@ -75,32 +75,35 @@ export default async function PurchaseDetailPage({
       {/* Summary */}
       <Card className="p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
-          <PurchaseImageButton
-            userId={userId}
-            purchaseId={purchase.id}
-            itemName={purchase.item_name}
-            src={purchase.imageSrc}
-            disabled={Boolean(archivedAt)}
-          />
+          <div className="flex items-center gap-3.5 sm:block">
+            <PurchaseImageButton
+              userId={userId}
+              purchaseId={purchase.id}
+              itemName={purchase.item_name}
+              src={purchase.imageSrc}
+              disabled={Boolean(archivedAt)}
+            />
 
-          {!archivedAt && (
-            <div className="grid grid-cols-[1fr_auto] items-center gap-2 sm:hidden">
-              <ButtonLink
-                href={`/purchases/${purchase.id}/edit`}
-                variant="primary"
-                size="sm"
-                className="w-full"
-              >
-                <Pencil aria-hidden="true" />
-                Edit purchase
-              </ButtonLink>
-              <ArchiveButton
-                purchaseId={purchase.id}
-                itemName={purchase.item_name}
-                archived={false}
-              />
-            </div>
-          )}
+            {!archivedAt && (
+              <div className="flex min-w-0 flex-1 flex-col justify-center gap-2 sm:hidden">
+                <ButtonLink
+                  href={`/purchases/${purchase.id}/edit`}
+                  variant="primary"
+                  size="sm"
+                  className="w-full"
+                >
+                  <Pencil aria-hidden="true" />
+                  Edit purchase
+                </ButtonLink>
+                <ArchiveButton
+                  purchaseId={purchase.id}
+                  itemName={purchase.item_name}
+                  archived={false}
+                  className="w-full"
+                />
+              </div>
+            )}
+          </div>
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
