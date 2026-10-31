@@ -1,40 +1,32 @@
-import { Layers, SearchX } from "lucide-react";
+import { Archive, Layers, SearchX } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
+import { BackLink } from "@/components/ui/back-link";
 import { ButtonLink } from "@/components/ui/button";
-import { ChipFilter } from "@/components/ui/chip-filter";
 import { Card, EmptyState, PageHeader } from "@/components/ui/surface";
-import { SearchInput } from "@/components/ui/url-state";
+import { BatchFilterControls } from "@/features/batches/batch-filters";
 import { BatchRow } from "@/features/batches/batch-row";
-import { listBatches, type BatchView } from "@/features/batches/queries";
+import { filterBatches, parseBatchFilters } from "@/features/batches/filters";
+import { listBatches } from "@/features/batches/queries";
 import { requireUser } from "@/lib/auth";
-import {
-  COUNTRY_LABEL,
-  isTrackingStatus,
-  TRACKING_STATUSES,
-  TRACKING_STATUS_LABEL,
-} from "@/lib/domain";
 import { pluralize } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Batches" };
 
-const NEEDS_UPDATE = "needs-update";
-
-function matchesStatus(batch: BatchView, filter: string) {
-  if (!filter) return true;
-  if (filter === NEEDS_UPDATE) return batch.stale;
-  return batch.status === filter;
-}
-
 export default async function BatchesPage({ searchParams }: PageProps<"/batches">) {
   const params = await searchParams;
-  const rawStatus = typeof params.status === "string" ? params.status : "";
-  const status = rawStatus === NEEDS_UPDATE || isTrackingStatus(rawStatus) ? rawStatus : "";
-  const q = typeof params.q === "string" ? params.q.trim().toLowerCase() : "";
+  const filters = parseBatchFilters(params);
 
   const { supabase } = await requireUser();
-  const batches = await listBatches(supabase);
+  const allBatches = await listBatches(supabase);
 
-  if (batches.length === 0) {
+  const totalBatches = allBatches.length;
+  const activeBatches = allBatches.filter((b) => b.status !== "DELIVERED");
+  const deliveredBatches = allBatches.filter((b) => b.status === "DELIVERED");
+  const deliveredCount = deliveredBatches.length;
+  const staleCount = activeBatches.filter((b) => b.stale).length;
+
+  if (totalBatches === 0) {
     return (
       <>
         <PageHeader title="Batches" description="Your Group Order batches and where they are." />
@@ -50,103 +42,157 @@ export default async function BatchesPage({ searchParams }: PageProps<"/batches"
     );
   }
 
-  const searched = q
-    ? batches.filter((b) =>
-        `batch ${b.batch_number} ${b.source.name} ${COUNTRY_LABEL[b.country]}`
-          .toLowerCase()
-          .includes(q),
-      )
-    : batches;
-  const visible = searched.filter((b) => matchesStatus(b, status));
+  if (filters.view === "archived") {
+    const visible = filterBatches(allBatches, filters);
 
-  // Organized by Source → Country → Batch (PRD §23).
-  const groups = new Map<string, { title: string; batches: BatchView[] }>();
-  for (const batch of visible) {
-    const key = `${batch.source.id}:${batch.country}`;
-    if (!groups.has(key)) {
-      groups.set(key, {
-        title: `${batch.source.name} · ${COUNTRY_LABEL[batch.country]}`,
-        batches: [],
-      });
-    }
-    groups.get(key)!.batches.push(batch);
+    return (
+      <>
+        <PageHeader
+          back={<BackLink href="/batches">Batches</BackLink>}
+          title="Archived batches"
+          description="Completed batches that have been delivered."
+        />
+
+        <div className="flex flex-col gap-4">
+          {deliveredCount > 0 && (
+            <BatchFilterControls
+              filters={filters}
+              counts={{ total: deliveredCount, stale: 0 }}
+            />
+          )}
+
+          <Card className="overflow-hidden">
+            {deliveredCount === 0 ? (
+              <EmptyState
+                icon={<Archive />}
+                title="No archived batches"
+                description="Batches marked as Delivered will appear here."
+                action={
+                  <ButtonLink href="/batches" variant="secondary">
+                    Back to active batches
+                  </ButtonLink>
+                }
+              />
+            ) : visible.length === 0 ? (
+              <EmptyState
+                icon={<SearchX />}
+                title="No archived batches match your filters"
+                description="Try a different search or clear your filters."
+                action={
+                  <ButtonLink href="/batches?view=archived" variant="secondary">
+                    Clear filters
+                  </ButtonLink>
+                }
+              />
+            ) : (
+              <>
+                <div className="flex items-center justify-between border-b border-line px-4 py-3 text-sm text-ink-3 sm:px-5">
+                  <p aria-live="polite">
+                    {pluralize(visible.length, "archived batch", "archived batches")}
+                  </p>
+                </div>
+                <ul className="divide-y divide-line">
+                  {visible.map((batch) => (
+                    <BatchRow key={batch.id} batch={batch} from="archived" />
+                  ))}
+                </ul>
+              </>
+            )}
+          </Card>
+        </div>
+      </>
+    );
   }
-  const sortedGroups = [...groups.values()].sort((a, b) => a.title.localeCompare(b.title));
 
-  const active = batches.filter((b) => b.status !== "DELIVERED").length;
-  const stale = batches.filter((b) => b.stale).length;
-  const delivered = batches.length - active;
-
-  const options = [
-    { value: "", label: "All", count: searched.length },
-    { value: NEEDS_UPDATE, label: "Needs update", count: searched.filter((b) => b.stale).length },
-    ...TRACKING_STATUSES.map((s) => ({
-      value: s,
-      label: TRACKING_STATUS_LABEL[s],
-      count: searched.filter((b) => b.status === s).length,
-    })),
-  ];
+  const visible = filterBatches(allBatches, filters);
+  const isFiltered = Boolean(filters.q || filters.status || filters.country);
 
   return (
     <>
       <PageHeader
         title="Batches"
         description="Group Order batches. Updating a batch updates every purchase inside it."
+        actions={
+          deliveredCount > 0 ? (
+            <ButtonLink href="/batches?view=archived" variant="secondary" size="sm">
+              <Archive aria-hidden="true" />
+              Archived ({deliveredCount})
+            </ButtonLink>
+          ) : undefined
+        }
       />
 
-      <dl className="mb-5 grid grid-cols-3 divide-x divide-line rounded-[var(--radius-card)] border border-line bg-surface">
-        <Stat label="In progress" value={active} />
-        <Stat label="Needs update" value={stale} highlight={stale > 0} />
-        <Stat label="Delivered" value={delivered} />
-      </dl>
+      <div className="flex flex-col gap-4">
+        <BatchFilterControls
+          filters={filters}
+          counts={{
+            total: activeBatches.length,
+            stale: staleCount,
+          }}
+        />
 
-      <div className="mb-4 flex flex-col gap-3">
-        <SearchInput label="Search batches" placeholder="Search batch number or source" />
-        <ChipFilter param="status" value={status} options={options} label="Filter by status" />
-      </div>
-
-      {sortedGroups.length === 0 ? (
-        <Card>
-          <EmptyState
-            icon={<SearchX />}
-            title="No batches match your filters"
-            action={
-              <ButtonLink href="/batches" variant="secondary">
-                Clear filters
-              </ButtonLink>
-            }
-          />
-        </Card>
-      ) : (
-        <div className="flex flex-col gap-5">
-          {sortedGroups.map((group) => (
-            <Card key={group.title} className="overflow-hidden">
-              <div className="flex items-baseline justify-between gap-3 border-b border-line bg-surface-2/50 px-5 py-2.5">
-                <h2 className="truncate text-sm font-semibold text-ink">{group.title}</h2>
-                <p className="shrink-0 text-xs text-ink-3">{pluralize(group.batches.length, "batch", "batches")}</p>
+        <Card className="overflow-hidden">
+          {visible.length === 0 ? (
+            isFiltered ? (
+              <EmptyState
+                icon={<SearchX />}
+                title="No batches match your filters"
+                description="Try a different search or remove a filter."
+                action={
+                  <ButtonLink href="/batches" variant="secondary">
+                    Clear filters
+                  </ButtonLink>
+                }
+              />
+            ) : activeBatches.length === 0 ? (
+              <EmptyState
+                icon={<Layers />}
+                title="All batches delivered"
+                description="You don't have any active batches right now. Your completed batches are safely archived."
+                action={
+                  <ButtonLink href="/batches?view=archived" variant="secondary">
+                    <Archive className="size-4" aria-hidden="true" />
+                    View archived batches ({deliveredCount})
+                  </ButtonLink>
+                }
+              />
+            ) : (
+              <EmptyState
+                icon={<Layers />}
+                title="No batches found"
+                description="Create a Group Order purchase to get started."
+                action={<ButtonLink href="/purchases/new">Add Purchase</ButtonLink>}
+              />
+            )
+          ) : (
+            <>
+              <div className="flex items-center justify-between border-b border-line px-4 py-3 text-sm text-ink-3 sm:px-5">
+                <p aria-live="polite">{pluralize(visible.length, "batch")}</p>
+                {staleCount > 0 && (
+                  <span className="text-warning text-xs font-medium">
+                    {staleCount} need update
+                  </span>
+                )}
               </div>
               <ul className="divide-y divide-line">
-                {group.batches.map((batch) => (
-                  <BatchRow key={batch.id} batch={batch} showSource={false} />
+                {visible.map((batch) => (
+                  <BatchRow key={batch.id} batch={batch} />
                 ))}
               </ul>
-            </Card>
-          ))}
-        </div>
-      )}
-    </>
-  );
-}
+            </>
+          )}
+        </Card>
 
-function Stat({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
-  return (
-    <div className="px-3 py-3 sm:px-5 sm:py-3.5">
-      <dt className="text-sm text-ink-3 max-sm:text-xs max-sm:leading-tight">{label}</dt>
-      <dd
-        className={`tabular mt-1 font-display text-2xl font-bold sm:mt-0.5 ${highlight ? "text-warning" : "text-ink"}`}
-      >
-        {value}
-      </dd>
-    </div>
+        {deliveredCount > 0 && (
+          <Link
+            href="/batches?view=archived"
+            className="inline-flex h-10 w-fit items-center gap-2 self-center text-sm font-medium text-ink-2 hover:text-ink"
+          >
+            <Archive className="size-4" aria-hidden="true" />
+            View archived batches ({deliveredCount})
+          </Link>
+        )}
+      </div>
+    </>
   );
 }

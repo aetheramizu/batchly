@@ -14,7 +14,7 @@ import {
 type Client = SupabaseClient<Database>;
 
 const BATCH_SELECT = `
-  id, batch_number, batch_date, country, status, last_updated_at, notes, source_id,
+  id, batch_number, batch_date, country, status, last_updated_at, notes, source_id, created_at,
   source:sources!batches_source_id_user_id_fkey(id, name, type, platform),
   purchases:purchases!purchases_batch_id_source_id_user_id_fkey(price, paid_amount, archived_at)
 ` as const;
@@ -28,6 +28,7 @@ type BatchRow = {
   last_updated_at: string;
   notes: string | null;
   source_id: string;
+  created_at: string;
   source: SourceSummary | null;
   purchases: { price: number; paid_amount: number; archived_at: string | null }[];
 };
@@ -58,10 +59,12 @@ export async function listBatches(supabase: Client): Promise<BatchView[]> {
   const { data, error } = await supabase
     .from("batches")
     .select(BATCH_SELECT)
-    .order("batch_date", { ascending: false });
+    .order("created_at", { ascending: false });
   if (error) throw error;
   const now = new Date();
-  return (data as unknown as BatchRow[]).map((row) => toBatchView(row, now));
+  return (data as unknown as BatchRow[])
+    .map((row) => toBatchView(row, now))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 }
 
 export async function getBatchWithPurchases(supabase: Client, id: string) {

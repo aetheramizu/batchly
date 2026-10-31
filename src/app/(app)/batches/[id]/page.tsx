@@ -17,11 +17,14 @@ import { isUuid } from "@/lib/validation";
 export const metadata: Metadata = { title: "Batch" };
 
 /** Where "Back" goes, preserving navigation context (UX_SPEC §54). */
-function backTarget(from: string | undefined) {
+function backTarget(from: string | undefined, isDelivered?: boolean) {
   if (from?.startsWith("purchase:") && isUuid(from.slice(9))) {
     return { href: `/purchases/${from.slice(9)}`, label: "Back to purchase" };
   }
   if (from === "dashboard") return { href: "/dashboard", label: "Dashboard" };
+  if (from === "archived" || (!from && isDelivered)) {
+    return { href: "/batches?view=archived", label: "Archived batches" };
+  }
   return { href: "/batches", label: "Batches" };
 }
 
@@ -37,7 +40,11 @@ export default async function BatchDetailPage({
   if (!result) notFound();
 
   const { batch, purchases } = result;
-  const back = backTarget(typeof query.from === "string" ? query.from : undefined);
+  const isDelivered = batch.status === "DELIVERED";
+  const back = backTarget(
+    typeof query.from === "string" ? query.from : undefined,
+    isDelivered,
+  );
   const addHref = `/purchases/new?batch=${batch.id}`;
 
   return (
@@ -62,18 +69,20 @@ export default async function BatchDetailPage({
               {COUNTRY_LABEL[batch.country]} · {formatDate(batch.batch_date)}
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-row">
             <EditBatchButton
               batchId={batch.id}
               batchNumber={batch.batch_number}
               batchDate={batch.batch_date}
               notes={batch.notes}
+              className="w-full sm:w-auto"
             />
             <UpdateBatchStatusButton
               batchId={batch.id}
               batchNumber={batch.batch_number}
               status={batch.status}
               purchaseCount={batch.purchaseCount}
+              className="w-full sm:w-auto"
             />
           </div>
         </div>

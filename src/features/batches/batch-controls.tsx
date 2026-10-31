@@ -18,17 +18,19 @@ export function UpdateBatchStatusButton({
   status,
   purchaseCount,
   variant = "primary",
+  className,
 }: {
   batchId: string;
   batchNumber: string;
   status: TrackingStatus;
   purchaseCount: number;
   variant?: "primary" | "secondary";
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button variant={variant} onClick={() => setOpen(true)}>
+      <Button variant={variant} onClick={() => setOpen(true)} className={className}>
         <RefreshCw aria-hidden="true" />
         Update status
       </Button>
@@ -55,16 +57,18 @@ export function EditBatchButton({
   batchNumber,
   batchDate,
   notes,
+  className,
 }: {
   batchId: string;
   batchNumber: string;
   batchDate: string;
   notes: string | null;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button variant="secondary" onClick={() => setOpen(true)}>
+      <Button variant="secondary" onClick={() => setOpen(true)} className={className}>
         <Pencil aria-hidden="true" />
         Edit batch
       </Button>
