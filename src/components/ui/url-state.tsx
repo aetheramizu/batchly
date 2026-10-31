@@ -85,7 +85,7 @@ export function SearchInput({
           type="button"
           onClick={() => onChange("")}
           aria-label="Clear search"
-          className="absolute inset-y-0 right-0 grid w-10 place-items-center text-ink-3 hover:text-ink"
+          className="absolute inset-y-0 right-0 grid w-11 place-items-center text-ink-3 hover:text-ink active:text-ink select-none touch-manipulation sm:w-10"
         >
           <X className="size-4" aria-hidden="true" />
         </button>

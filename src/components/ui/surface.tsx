@@ -29,15 +29,15 @@ export function CardHeader({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-5 pt-5 pb-4",
+        "flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-4 pt-4 pb-3 sm:px-5 sm:pt-5 sm:pb-4",
         className,
       )}
     >
-      <div className="min-w-0">
-        <Heading className="font-display text-base font-semibold text-ink">
+      <div className="min-w-0 flex-1">
+        <Heading className="font-display text-base font-semibold text-ink break-words">
           {title}
         </Heading>
-        {description && <p className="mt-0.5 text-sm text-ink-3">{description}</p>}
+        {description && <p className="mt-0.5 text-sm text-ink-3 break-words">{description}</p>}
       </div>
       {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
     </div>
@@ -56,19 +56,19 @@ export function PageHeader({
   back?: ReactNode;
 }) {
   return (
-    <header className="mb-6 flex flex-col gap-4 lg:mb-8">
+    <header className="mb-5 flex flex-col gap-3 sm:mb-6 sm:gap-4 lg:mb-8">
       {back}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="font-display text-[28px] leading-tight font-bold tracking-[-0.02em] text-ink lg:text-[32px]">
+      <div className="flex flex-wrap items-start justify-between gap-3 sm:items-end sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h1 className="font-display text-2xl leading-tight font-bold tracking-[-0.02em] text-ink text-balance sm:text-[28px] lg:text-[32px] break-words">
             {title}
           </h1>
           {description && (
-            <p className="mt-1.5 max-w-prose text-[15px] text-ink-2">{description}</p>
+            <p className="mt-1.5 max-w-prose text-[15px] text-ink-2 break-words">{description}</p>
           )}
         </div>
         {actions && (
-          <div className="flex flex-wrap items-center gap-2 max-sm:has-[>.hidden:only-child]:hidden">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 max-sm:has-[>.hidden:only-child]:hidden">
             {actions}
           </div>
         )}
@@ -93,7 +93,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center px-6 py-12 text-center",
+        "flex flex-col items-center px-4 py-10 sm:px-6 sm:py-12 text-center",
         className,
       )}
     >
@@ -102,9 +102,9 @@ export function EmptyState({
           {icon}
         </div>
       )}
-      <p className="font-display text-base font-semibold text-ink">{title}</p>
+      <p className="font-display text-base font-semibold text-ink break-words">{title}</p>
       {description && (
-        <p className="mt-1 max-w-sm text-sm text-ink-2">{description}</p>
+        <p className="mt-1 max-w-sm text-sm text-ink-2 break-words">{description}</p>
       )}
       {action && <div className="mt-5">{action}</div>}
     </div>
@@ -137,8 +137,8 @@ export function DetailRow({
         className,
       )}
     >
-      <dt className="text-ink-2">{label}</dt>
-      <dd className="min-w-0 text-right font-medium text-ink">{children}</dd>
+      <dt className="shrink-0 text-ink-2">{label}</dt>
+      <dd className="min-w-0 text-right font-medium text-ink break-words [overflow-wrap:anywhere]">{children}</dd>
     </div>
   );
 }

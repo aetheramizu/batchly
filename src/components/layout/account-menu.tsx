@@ -21,17 +21,17 @@ export function AccountMenu({
 
   useEffect(() => {
     if (!open) return;
-    const close = (event: MouseEvent | KeyboardEvent) => {
+    const close = (event: PointerEvent | KeyboardEvent) => {
       if (event instanceof KeyboardEvent) {
         if (event.key === "Escape") setOpen(false);
         return;
       }
       if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
     };
-    document.addEventListener("mousedown", close);
+    document.addEventListener("pointerdown", close);
     document.addEventListener("keydown", close);
     return () => {
-      document.removeEventListener("mousedown", close);
+      document.removeEventListener("pointerdown", close);
       document.removeEventListener("keydown", close);
     };
   }, [open]);
@@ -45,7 +45,7 @@ export function AccountMenu({
         aria-haspopup="true"
         aria-label={compact ? "Account" : undefined}
         className={cn(
-          "flex items-center gap-3 rounded-[var(--radius-control)] text-left transition-colors hover:bg-surface-2",
+          "flex items-center gap-3 rounded-[var(--radius-control)] text-left select-none touch-manipulation transition-colors hover:bg-surface-2 active:bg-surface-3",
           compact ? "size-11 justify-center" : "w-full p-2",
         )}
       >
@@ -66,7 +66,7 @@ export function AccountMenu({
       {open && (
         <div
           className={cn(
-            "absolute z-50 w-64 rounded-[var(--radius-card)] border border-line bg-surface p-1.5 shadow-[var(--shadow-float)]",
+            "absolute z-50 w-64 max-w-[calc(100vw-2rem)] rounded-[var(--radius-card)] border border-line bg-surface p-1.5 shadow-[var(--shadow-float)]",
             placement === "up" ? "bottom-full left-0 mb-2" : "top-full right-0 mt-2",
           )}
         >
@@ -77,7 +77,7 @@ export function AccountMenu({
             <button
               type="submit"
               disabled={signingOut}
-              className="flex h-10 w-full items-center gap-2.5 rounded-lg px-3 text-sm font-medium text-ink hover:bg-surface-2 disabled:opacity-60"
+              className="flex min-h-[44px] h-11 w-full items-center gap-2.5 rounded-lg px-3 text-sm font-medium text-ink hover:bg-surface-2 active:bg-surface-3 select-none touch-manipulation disabled:opacity-60"
             >
               <LogOut className="size-4 text-ink-3" aria-hidden="true" />
               {signingOut ? "Signing out…" : "Sign out"}

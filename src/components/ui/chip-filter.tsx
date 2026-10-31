@@ -29,10 +29,10 @@ export function ChipFilter({
             aria-checked={selected}
             onClick={() => update({ [param]: option.value || null })}
             className={cn(
-              "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium whitespace-nowrap transition-colors",
+              "inline-flex h-9.5 min-h-[38px] shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium whitespace-nowrap select-none touch-manipulation transition-colors active:scale-[0.98] sm:h-9 sm:min-h-9",
               selected
                 ? "border-ink bg-ink text-white"
-                : "border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink",
+                : "border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink active:bg-surface-2",
             )}
           >
             {option.label}

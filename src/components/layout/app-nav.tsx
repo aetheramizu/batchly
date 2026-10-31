@@ -93,7 +93,7 @@ export function BottomNav() {
             href="/purchases/new"
             aria-label="Add Purchase"
             aria-current={pathname === "/purchases/new" ? "page" : undefined}
-            className="grid size-12 place-items-center rounded-full bg-accent text-white shadow-[var(--shadow-float)] transition-transform active:scale-95"
+            className="grid size-12 place-items-center rounded-full bg-accent text-white shadow-[var(--shadow-float)] transition-transform active:scale-95 touch-manipulation"
           >
             <Plus className="size-6" aria-hidden="true" />
           </Link>
@@ -118,21 +118,21 @@ function BottomNavItem({
   active: boolean;
 }) {
   return (
-    <li>
+    <li className="flex h-full items-center justify-center">
       <Link
         href={href}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "flex h-14 flex-col items-center justify-center gap-1 text-[11px] font-medium",
-          active ? "text-ink" : "text-ink-3",
+          "flex h-full w-full flex-col items-center justify-center gap-1 text-[11px] font-medium select-none touch-manipulation transition-colors active:opacity-75",
+          active ? "font-semibold text-ink" : "text-ink-3 hover:text-ink",
         )}
       >
         <Icon
-          className={cn("size-5", active && "text-accent")}
+          className={cn("size-5 transition-transform", active ? "scale-105 text-accent" : "text-ink-3")}
           strokeWidth={active ? 2.25 : 2}
           aria-hidden="true"
         />
-        {label}
+        <span className="truncate">{label}</span>
       </Link>
     </li>
   );

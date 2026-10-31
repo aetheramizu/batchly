@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 export const controlClasses =
-  "w-full rounded-[var(--radius-control)] border border-line bg-surface px-3 text-[15px] text-ink placeholder:text-ink-3 transition-colors hover:border-line-strong focus:border-accent focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-accent/30 disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-ink-3 aria-invalid:border-danger";
+  "w-full rounded-[var(--radius-control)] border border-line bg-surface px-3 text-[15px] text-ink placeholder:text-ink-3 transition-colors touch-manipulation hover:border-line-strong focus:border-accent focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-accent/30 disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-ink-3 aria-invalid:border-danger";
 
 export function Field({
   id,
@@ -28,7 +28,7 @@ export function Field({
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
       <div className="flex min-h-5 items-center justify-between gap-2">
-        <label htmlFor={id} className="text-sm font-medium text-ink">
+        <label htmlFor={id} className="min-w-0 flex-1 text-sm font-medium text-ink break-words">
           {label}
           {required && (
             <span className="text-accent-ink" aria-hidden="true">
@@ -38,15 +38,15 @@ export function Field({
           )}
           {optional && <span className="font-normal text-ink-3"> (optional)</span>}
         </label>
-        {action}
+        {action && <div className="shrink-0">{action}</div>}
       </div>
       {children}
       {error ? (
-        <p id={`${id}-error`} className="text-sm text-danger">
+        <p id={`${id}-error`} className="text-sm text-danger break-words">
           {error}
         </p>
       ) : hint ? (
-        <p id={`${id}-hint`} className="text-sm text-ink-3">
+        <p id={`${id}-hint`} className="text-sm text-ink-3 break-words">
           {hint}
         </p>
       ) : null}

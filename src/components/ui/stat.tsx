@@ -45,14 +45,14 @@ export function Stat({
       </p>
       <p
         className={cn(
-          "tabular mt-1 font-display leading-tight font-bold tracking-[-0.01em]",
+          "tabular mt-1 font-display leading-tight font-bold tracking-[-0.01em] break-words",
           size === "lg" ? "text-2xl sm:text-[28px]" : "text-2xl",
           valueTone[tone],
         )}
       >
         {value}
       </p>
-      {hint && <p className="mt-1 text-xs text-ink-3">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-ink-3 break-words">{hint}</p>}
     </>
   );
 
@@ -63,7 +63,7 @@ export function Stat({
       href={href}
       className={cn(
         base,
-        "group transition-colors hover:bg-surface-2/60 focus-visible:-outline-offset-2",
+        "group transition-colors hover:bg-surface-2/60 active:bg-surface-2 select-none touch-manipulation focus-visible:-outline-offset-2",
         className,
       )}
     >

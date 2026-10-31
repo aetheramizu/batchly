@@ -54,16 +54,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={toast.id}
             role={toast.tone === "error" ? "alert" : "status"}
             className={cn(
-              "pointer-events-auto flex max-w-sm items-center gap-2.5 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-white shadow-[var(--shadow-float)]",
+              "pointer-events-auto flex max-w-sm max-w-[calc(100vw-2rem)] items-center gap-2.5 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-white shadow-[var(--shadow-float)] select-none touch-manipulation",
               "animate-[toast-in_180ms_ease-out]",
             )}
           >
             {toast.tone === "success" ? (
-              <CircleCheck className="size-4 text-emerald-300" aria-hidden="true" />
+              <CircleCheck className="size-4 shrink-0 text-emerald-300" aria-hidden="true" />
             ) : (
-              <CircleAlert className="size-4 text-red-300" aria-hidden="true" />
+              <CircleAlert className="size-4 shrink-0 text-red-300" aria-hidden="true" />
             )}
-            {toast.message}
+            <span className="min-w-0 break-words">{toast.message}</span>
           </div>
         ))}
       </div>
