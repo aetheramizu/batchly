@@ -53,10 +53,10 @@ export function BatchRow({
           </p>
           {batch.itemPreview && batch.itemPreview.length > 0 && (
             <p className="mt-1 truncate text-xs text-ink-3">
-              <span className="font-medium text-ink-2">Jajanan: </span>
+              <span className="font-medium text-ink-2">Items: </span>
               {batch.itemPreview.slice(0, 3).join(", ")}
               {batch.itemPreview.length > 3 && (
-                <span className="text-ink-3"> +{batch.itemPreview.length - 3} lainnya</span>
+                <span className="text-ink-3"> +{batch.itemPreview.length - 3} more</span>
               )}
             </p>
           )}

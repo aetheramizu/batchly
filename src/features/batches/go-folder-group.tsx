@@ -76,7 +76,7 @@ export function GoFolderCard({
               </span>
               <span className="text-line-strong">·</span>
               <span className="text-ink-2">
-                {pluralize(folder.totalPurchases, "jajanan")}
+                {pluralize(folder.totalPurchases, "purchase")}
               </span>
               <span className="text-line-strong">·</span>
               <span className="tabular text-ink-3">
@@ -105,11 +105,11 @@ export function GoFolderCard({
         <div className="flex items-center pr-3 sm:pr-4">
           <Link
             href={purchasesHref}
-            title={`Lihat semua jajanan di ${folder.source.name}`}
+            title={`View all purchases from ${folder.source.name}`}
             className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 text-xs font-medium text-ink-2 transition-colors hover:border-line-strong hover:bg-surface-2 hover:text-ink sm:px-3 sm:text-sm"
           >
             <ShoppingBag className="size-3.5 text-ink-3" aria-hidden="true" />
-            <span className="hidden sm:inline">Jajanan</span>
+            <span className="hidden sm:inline">Purchases</span>
           </Link>
         </div>
       </div>
@@ -126,13 +126,13 @@ export function GoFolderCard({
           {/* Folder Footer Summary */}
           <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line bg-surface-2/40 px-4 py-2.5 text-xs text-ink-2 sm:px-5">
             <p>
-              Total {pluralize(folder.totalPurchases, "jajanan")} di {folder.source.name}
+              {pluralize(folder.totalPurchases, "purchase")} total in {folder.source.name}
             </p>
             <Link
               href={purchasesHref}
               className="inline-flex items-center gap-1 font-medium text-accent hover:text-accent-hover"
             >
-              Lihat di daftar jajanan →
+              View in purchases →
             </Link>
           </div>
         </div>
@@ -189,7 +189,7 @@ export function GoFolderList({
       {folders.length > 1 && (
         <div className="flex items-center justify-between px-1 text-xs text-ink-3">
           <p>
-            {pluralize(folders.length, "folder Group Order", "folder Group Order")}
+            {pluralize(folders.length, "Group Order folder")}
           </p>
           <button
             type="button"
@@ -197,7 +197,7 @@ export function GoFolderList({
             className="inline-flex items-center gap-1 font-medium text-ink-2 hover:text-ink select-none touch-manipulation"
           >
             <ChevronsUpDown className="size-3.5" aria-hidden="true" />
-            {allOpen ? "Tutup semua" : "Buka semua"}
+            {allOpen ? "Collapse all" : "Expand all"}
           </button>
         </div>
       )}

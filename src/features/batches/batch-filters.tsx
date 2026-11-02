@@ -50,7 +50,7 @@ export function BatchFilterControls({
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        {/* Layout Switcher: Folder GO vs Semua Batch */}
+        {/* Layout Switcher: Folders vs All Batches */}
         <div
           role="group"
           aria-label="Batch layout mode"
@@ -68,7 +68,7 @@ export function BatchFilterControls({
             )}
           >
             <FolderClosed className="size-3.5 sm:size-4" aria-hidden="true" />
-            <span>Folder GO</span>
+            <span>Folders</span>
           </button>
           <button
             type="button"
@@ -82,7 +82,7 @@ export function BatchFilterControls({
             )}
           >
             <Layers className="size-3.5 sm:size-4" aria-hidden="true" />
-            <span>Semua Batch</span>
+            <span>All Batches</span>
           </button>
         </div>
       </div>
@@ -92,8 +92,8 @@ export function BatchFilterControls({
           label={isArchived ? "Search archived batches" : "Search batches"}
           placeholder={
             isArchived
-              ? "Search archived batch, source or country"
-              : "Search batch number, source, country, or jajanan"
+              ? "Search archived batch, source, or country"
+              : "Search batch number, source, country, or item"
           }
           className="min-w-0 flex-1"
         />
