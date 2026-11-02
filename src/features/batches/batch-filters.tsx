@@ -1,8 +1,9 @@
 "use client";
 
-import { X } from "lucide-react";
+import { FolderClosed, Layers, X } from "lucide-react";
 import { Select } from "@/components/ui/field";
 import { SearchInput, useUpdateParams } from "@/components/ui/url-state";
+import { cn } from "@/lib/cn";
 import {
   COUNTRIES,
   COUNTRY_LABEL,
@@ -28,6 +29,7 @@ export function BatchFilterControls({
 }) {
   const { update } = useUpdateParams();
   const isArchived = filters.view === "archived";
+  const layout = filters.layout ?? "go";
 
   const chips = [
     filters.status && {
@@ -47,13 +49,51 @@ export function BatchFilterControls({
 
   return (
     <div className="flex flex-col gap-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        {/* Layout Switcher: Folder GO vs Semua Batch */}
+        <div
+          role="group"
+          aria-label="Batch layout mode"
+          className="flex items-center rounded-[var(--radius-control)] bg-surface-2 p-1"
+        >
+          <button
+            type="button"
+            aria-pressed={layout === "go"}
+            onClick={() => update({ layout: null })}
+            className={cn(
+              "flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors select-none touch-manipulation sm:h-8.5 sm:px-3 sm:text-sm",
+              layout === "go"
+                ? "bg-surface text-ink font-semibold shadow-xs"
+                : "text-ink-2 hover:text-ink",
+            )}
+          >
+            <FolderClosed className="size-3.5 sm:size-4" aria-hidden="true" />
+            <span>Folder GO</span>
+          </button>
+          <button
+            type="button"
+            aria-pressed={layout === "all"}
+            onClick={() => update({ layout: "all" })}
+            className={cn(
+              "flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium transition-colors select-none touch-manipulation sm:h-8.5 sm:px-3 sm:text-sm",
+              layout === "all"
+                ? "bg-surface text-ink font-semibold shadow-xs"
+                : "text-ink-2 hover:text-ink",
+            )}
+          >
+            <Layers className="size-3.5 sm:size-4" aria-hidden="true" />
+            <span>Semua Batch</span>
+          </button>
+        </div>
+      </div>
+
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <SearchInput
           label={isArchived ? "Search archived batches" : "Search batches"}
           placeholder={
             isArchived
               ? "Search archived batch, source or country"
-              : "Search batch number, source, or country"
+              : "Search batch number, source, country, or jajanan"
           }
           className="min-w-0 flex-1"
         />

@@ -51,6 +51,15 @@ export function BatchRow({
               <span className="font-medium text-warning sm:hidden"> · Needs update</span>
             )}
           </p>
+          {batch.itemPreview && batch.itemPreview.length > 0 && (
+            <p className="mt-1 truncate text-xs text-ink-3">
+              <span className="font-medium text-ink-2">Jajanan: </span>
+              {batch.itemPreview.slice(0, 3).join(", ")}
+              {batch.itemPreview.length > 3 && (
+                <span className="text-ink-3"> +{batch.itemPreview.length - 3} lainnya</span>
+              )}
+            </p>
+          )}
         </div>
 
         <div className="flex shrink-0 items-center gap-2">

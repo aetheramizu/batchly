@@ -9,6 +9,7 @@ import {
 import type { BatchView } from "./queries.ts";
 
 export type BatchViewMode = "active" | "archived";
+export type BatchLayoutMode = "go" | "all";
 
 export const NEEDS_UPDATE = "needs-update";
 
@@ -25,6 +26,7 @@ export type BatchFilters = {
   status: TrackingStatus | "needs-update" | "";
   country: Country | "";
   view: BatchViewMode;
+  layout?: BatchLayoutMode;
 };
 
 type Params = Record<string, string | string[] | undefined>;
@@ -37,6 +39,7 @@ export function parseBatchFilters(params: Params): BatchFilters {
   const rawView = one(params.view);
   const rawStatus = one(params.status);
   const rawCountry = one(params.country);
+  const rawLayout = one(params.layout);
   const q = one(params.q).trim().slice(0, 100);
 
   const view: BatchViewMode =
@@ -55,7 +58,9 @@ export function parseBatchFilters(params: Params): BatchFilters {
     ? (rawCountry as Country)
     : "";
 
-  return { q, status, country, view };
+  const layout: BatchLayoutMode = rawLayout === "all" ? "all" : "go";
+
+  return { q, status, country, view, layout };
 }
 
 export function matchesView(batch: BatchView, view: BatchViewMode): boolean {
@@ -84,6 +89,7 @@ export function matchesSearch(batch: BatchView, q: string): boolean {
     COUNTRY_LABEL[batch.country] ?? "",
     batch.country,
     batch.notes ?? "",
+    ...(batch.itemPreview ?? []),
   ]
     .join(" ")
     .toLowerCase();

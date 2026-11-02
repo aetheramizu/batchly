@@ -7,6 +7,8 @@ import { Card, EmptyState, PageHeader } from "@/components/ui/surface";
 import { BatchFilterControls } from "@/features/batches/batch-filters";
 import { BatchRow } from "@/features/batches/batch-row";
 import { filterBatches, parseBatchFilters } from "@/features/batches/filters";
+import { GoFolderList } from "@/features/batches/go-folder-group";
+import { groupBatchesBySource } from "@/features/batches/grouping";
 import { listBatches } from "@/features/batches/queries";
 import { requireUser } from "@/lib/auth";
 import { pluralize } from "@/lib/format";
@@ -44,6 +46,7 @@ export default async function BatchesPage({ searchParams }: PageProps<"/batches"
 
   if (filters.view === "archived") {
     const visible = filterBatches(allBatches, filters);
+    const isFiltered = Boolean(filters.q || filters.country);
 
     return (
       <>
@@ -61,8 +64,8 @@ export default async function BatchesPage({ searchParams }: PageProps<"/batches"
             />
           )}
 
-          <Card className="overflow-hidden">
-            {deliveredCount === 0 ? (
+          {deliveredCount === 0 ? (
+            <Card className="overflow-hidden">
               <EmptyState
                 icon={<Archive />}
                 title="No archived batches"
@@ -73,7 +76,9 @@ export default async function BatchesPage({ searchParams }: PageProps<"/batches"
                   </ButtonLink>
                 }
               />
-            ) : visible.length === 0 ? (
+            </Card>
+          ) : visible.length === 0 ? (
+            <Card className="overflow-hidden">
               <EmptyState
                 icon={<SearchX />}
                 title="No archived batches match your filters"
@@ -84,21 +89,27 @@ export default async function BatchesPage({ searchParams }: PageProps<"/batches"
                   </ButtonLink>
                 }
               />
-            ) : (
-              <>
-                <div className="flex items-center justify-between border-b border-line px-4 py-3 text-sm text-ink-3 sm:px-5">
-                  <p aria-live="polite">
-                    {pluralize(visible.length, "archived batch", "archived batches")}
-                  </p>
-                </div>
-                <ul className="divide-y divide-line">
-                  {visible.map((batch) => (
-                    <BatchRow key={batch.id} batch={batch} from="archived" />
-                  ))}
-                </ul>
-              </>
-            )}
-          </Card>
+            </Card>
+          ) : filters.layout === "all" ? (
+            <Card className="overflow-hidden">
+              <div className="flex items-center justify-between border-b border-line px-4 py-3 text-sm text-ink-3 sm:px-5">
+                <p aria-live="polite">
+                  {pluralize(visible.length, "archived batch", "archived batches")}
+                </p>
+              </div>
+              <ul className="divide-y divide-line">
+                {visible.map((batch) => (
+                  <BatchRow key={batch.id} batch={batch} from="archived" />
+                ))}
+              </ul>
+            </Card>
+          ) : (
+            <GoFolderList
+              folders={groupBatchesBySource(visible)}
+              isFiltered={isFiltered}
+              from="archived"
+            />
+          )}
         </div>
       </>
     );
@@ -131,9 +142,9 @@ export default async function BatchesPage({ searchParams }: PageProps<"/batches"
           }}
         />
 
-        <Card className="overflow-hidden">
-          {visible.length === 0 ? (
-            isFiltered ? (
+        {visible.length === 0 ? (
+          <Card className="overflow-hidden">
+            {isFiltered ? (
               <EmptyState
                 icon={<SearchX />}
                 title="No batches match your filters"
@@ -163,25 +174,30 @@ export default async function BatchesPage({ searchParams }: PageProps<"/batches"
                 description="Create a Group Order purchase to get started."
                 action={<ButtonLink href="/purchases/new">Add Purchase</ButtonLink>}
               />
-            )
-          ) : (
-            <>
-              <div className="flex items-center justify-between border-b border-line px-4 py-3 text-sm text-ink-3 sm:px-5">
-                <p aria-live="polite">{pluralize(visible.length, "batch")}</p>
-                {staleCount > 0 && (
-                  <span className="text-warning text-xs font-medium">
-                    {staleCount} need update
-                  </span>
-                )}
-              </div>
-              <ul className="divide-y divide-line">
-                {visible.map((batch) => (
-                  <BatchRow key={batch.id} batch={batch} />
-                ))}
-              </ul>
-            </>
-          )}
-        </Card>
+            )}
+          </Card>
+        ) : filters.layout === "all" ? (
+          <Card className="overflow-hidden">
+            <div className="flex items-center justify-between border-b border-line px-4 py-3 text-sm text-ink-3 sm:px-5">
+              <p aria-live="polite">{pluralize(visible.length, "batch")}</p>
+              {staleCount > 0 && (
+                <span className="text-warning text-xs font-medium">
+                  {staleCount} need update
+                </span>
+              )}
+            </div>
+            <ul className="divide-y divide-line">
+              {visible.map((batch) => (
+                <BatchRow key={batch.id} batch={batch} />
+              ))}
+            </ul>
+          </Card>
+        ) : (
+          <GoFolderList
+            folders={groupBatchesBySource(visible)}
+            isFiltered={isFiltered}
+          />
+        )}
 
         {deliveredCount > 0 && (
           <Link

@@ -16,7 +16,7 @@ type Client = SupabaseClient<Database>;
 const BATCH_SELECT = `
   id, batch_number, batch_date, country, status, last_updated_at, notes, source_id, created_at,
   source:sources!batches_source_id_user_id_fkey(id, name, type, platform),
-  purchases:purchases!purchases_batch_id_source_id_user_id_fkey(price, paid_amount, archived_at)
+  purchases:purchases!purchases_batch_id_source_id_user_id_fkey(item_name, price, paid_amount, archived_at)
 ` as const;
 
 type BatchRow = {
@@ -30,7 +30,7 @@ type BatchRow = {
   source_id: string;
   created_at: string;
   source: SourceSummary | null;
-  purchases: { price: number; paid_amount: number; archived_at: string | null }[];
+  purchases: { item_name?: string; price: number; paid_amount: number; archived_at: string | null }[];
 };
 
 export type BatchView = Omit<BatchRow, "purchases" | "source"> & {
@@ -39,12 +39,16 @@ export type BatchView = Omit<BatchRow, "purchases" | "source"> & {
   totalValue: number;
   daysSinceUpdate: number;
   stale: boolean;
+  itemPreview: string[];
 };
 
 function toBatchView(row: BatchRow, now: Date): BatchView {
   const { purchases, source, ...batch } = row;
   if (!source) throw new Error(`Batch ${row.id} is missing its source`);
   const active = purchases.filter((p) => !p.archived_at);
+  const itemPreview = Array.from(
+    new Set(active.map((p) => p.item_name).filter((name): name is string => Boolean(name?.trim()))),
+  );
   return {
     ...batch,
     source,
@@ -52,6 +56,7 @@ function toBatchView(row: BatchRow, now: Date): BatchView {
     totalValue: active.reduce((sum, p) => sum + Number(p.price), 0),
     daysSinceUpdate: daysSince(row.last_updated_at, now),
     stale: isStale(row.status, row.last_updated_at, now),
+    itemPreview,
   };
 }
 
