@@ -153,14 +153,25 @@ export function GoFolderList({
   isFiltered: boolean;
   from?: string;
 }) {
-  // If user searched/filtered, auto-expand all folders with matching results
+  const [prevFiltered, setPrevFiltered] = useState(isFiltered);
   const [openIds, setOpenIds] = useState<Set<string>>(() => {
-    // By default, open all if 1-3 folders, or open first 2 if many
-    if (folders.length <= 3) {
+    // If arriving with filters already active (e.g. from a search link), auto-expand
+    if (isFiltered) {
       return new Set(folders.map((f) => f.id));
     }
-    return new Set(folders.slice(0, 2).map((f) => f.id));
+    // Default: all collapsed
+    return new Set<string>();
   });
+
+  // When search/filter status changes: auto-expand when filtering, collapse when clearing
+  if (isFiltered !== prevFiltered) {
+    setPrevFiltered(isFiltered);
+    if (isFiltered) {
+      setOpenIds(new Set(folders.map((f) => f.id)));
+    } else {
+      setOpenIds(new Set<string>());
+    }
+  }
 
   const allOpen = folders.length > 0 && folders.every((f) => openIds.has(f.id));
 
@@ -186,7 +197,7 @@ export function GoFolderList({
 
   return (
     <div className="flex flex-col gap-3">
-      {folders.length > 1 && (
+      {folders.length > 0 && (
         <div className="flex items-center justify-between px-1 text-xs text-ink-3">
           <p>
             {pluralize(folders.length, "Group Order folder")}
@@ -207,7 +218,7 @@ export function GoFolderList({
           <GoFolderCard
             key={folder.id}
             folder={folder}
-            isOpen={isFiltered || openIds.has(folder.id)}
+            isOpen={openIds.has(folder.id)}
             onToggle={() => toggleFolder(folder.id)}
             from={from}
           />
