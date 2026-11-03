@@ -3,15 +3,15 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { MIN_PASSWORD, validatePasswordPair } from "./password";
 
 export type AuthFormState = {
   error?: string;
-  fieldErrors?: { email?: string; password?: string };
+  fieldErrors?: { email?: string; password?: string; confirmPassword?: string };
   message?: string;
   email?: string;
 };
 
-const MIN_PASSWORD = 8;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function readCredentials(formData: FormData) {
@@ -86,14 +86,14 @@ export async function signUp(
   formData: FormData,
 ): Promise<AuthFormState> {
   const { email, password } = readCredentials(formData);
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
   const fieldErrors = {
     email: validateEmail(email),
-    password:
-      password.length >= MIN_PASSWORD
-        ? undefined
-        : `Use at least ${MIN_PASSWORD} characters.`,
+    ...validatePasswordPair(password, confirmPassword),
   };
-  if (fieldErrors.email || fieldErrors.password) return { fieldErrors, email };
+  if (fieldErrors.email || fieldErrors.password || fieldErrors.confirmPassword) {
+    return { fieldErrors, email };
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
@@ -141,9 +141,9 @@ export async function updatePassword(
   formData: FormData,
 ): Promise<AuthFormState> {
   const password = String(formData.get("password") ?? "");
-  if (password.length < MIN_PASSWORD) {
-    return { fieldErrors: { password: `Use at least ${MIN_PASSWORD} characters.` } };
-  }
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
+  const fieldErrors = validatePasswordPair(password, confirmPassword);
+  if (fieldErrors.password || fieldErrors.confirmPassword) return { fieldErrors };
 
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();

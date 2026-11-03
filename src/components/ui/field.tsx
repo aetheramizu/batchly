@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, ReactNode, Ref } from "react";
 import { cn } from "@/lib/cn";
 
 export const controlClasses =
@@ -97,6 +97,46 @@ export function FormAlert({ children }: { children: ReactNode }) {
       className="rounded-[var(--radius-control)] border border-danger/20 bg-danger-soft px-3.5 py-3 text-sm text-danger"
     >
       {children}
+    </div>
+  );
+}
+
+/**
+ * Focusable summary of field errors, shown at the top of a form after a failed
+ * submit. Each item links to its field so keyboard users can jump straight in.
+ */
+export function FormErrorSummary({
+  items,
+  ref,
+}: {
+  items: { id: string; label: string }[];
+  ref?: Ref<HTMLDivElement>;
+}) {
+  if (items.length === 0) return null;
+
+  return (
+    <div
+      ref={ref}
+      role="alert"
+      tabIndex={-1}
+      aria-labelledby="form-error-title"
+      className="rounded-[var(--radius-control)] border border-danger/20 bg-danger-soft px-3.5 py-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger/40"
+    >
+      <h2 id="form-error-title" className="text-sm font-semibold text-danger">
+        There is a problem
+      </h2>
+      <ul className="mt-1.5 flex list-disc flex-col gap-1 pl-4">
+        {items.map((item) => (
+          <li key={item.id} className="text-sm text-danger">
+            <a
+              href={`#${item.id}`}
+              className="underline underline-offset-2 hover:no-underline"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
