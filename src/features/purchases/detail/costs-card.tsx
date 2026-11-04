@@ -216,7 +216,7 @@ function CostForm({
               className={cn(
                 "flex h-11 cursor-pointer items-center justify-center rounded-[var(--radius-control)] border px-2 text-center text-sm font-medium transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
                 type === option
-                  ? "border-ink bg-ink text-white"
+                  ? "border-ink bg-ink text-canvas"
                   : "border-line text-ink-2 hover:border-line-strong",
               )}
             >

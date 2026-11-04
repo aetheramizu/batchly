@@ -31,13 +31,13 @@ export function ChipFilter({
             className={cn(
               "inline-flex h-9.5 min-h-[38px] shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium whitespace-nowrap select-none touch-manipulation transition-colors active:scale-[0.98] sm:h-9 sm:min-h-9",
               selected
-                ? "border-ink bg-ink text-white"
+                ? "border-ink bg-ink text-canvas"
                 : "border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink active:bg-surface-2",
             )}
           >
             {option.label}
             {option.count !== undefined && (
-              <span className={cn("tabular text-xs", selected ? "text-white/70" : "text-ink-3")}>
+              <span className={cn("tabular text-xs", selected ? "text-canvas/70" : "text-ink-3")}>
                 {option.count}
               </span>
             )}

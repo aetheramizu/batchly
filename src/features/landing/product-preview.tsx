@@ -46,7 +46,7 @@ export function ProductPreview({ className }: { className?: string }) {
           key={position}
           aria-hidden="true"
           className={cn(
-            "absolute z-10 hidden size-[54px] place-items-center rounded-[15px] border border-white bg-surface/85 text-accent shadow-[var(--shadow-float)] lg:grid",
+            "absolute z-10 hidden size-[54px] place-items-center rounded-[15px] border border-line bg-surface/85 text-accent shadow-[var(--shadow-float)] lg:grid",
             position,
             rotation,
           )}
@@ -55,7 +55,7 @@ export function ProductPreview({ className }: { className?: string }) {
         </span>
       ))}
 
-      <div className="overflow-hidden rounded-[20px] border border-white bg-surface/70 p-[7px] shadow-[var(--shadow-preview)]">
+      <div className="overflow-hidden rounded-[20px] border border-line bg-surface/70 p-[7px] shadow-[var(--shadow-preview)]">
         <Image
           src="/batchly-dashboard.png"
           alt="The Batchly dashboard showing spending totals, where purchases are, and which ones need attention."

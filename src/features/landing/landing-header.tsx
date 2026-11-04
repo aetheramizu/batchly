@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ButtonLink } from "@/components/ui/button";
 import { Container } from "./container";
 
@@ -14,9 +15,10 @@ export function LandingHeader() {
         </Link>
 
         <nav className="flex items-center gap-1 sm:gap-2" aria-label="Account">
+          <ThemeToggle className="mr-1" />
           <Link
             href="/login"
-            className="inline-flex min-h-11 items-center rounded-[var(--radius-control)] px-3 text-sm font-medium text-ink-2 transition-colors duration-150 hover:text-ink"
+            className="hidden min-h-11 items-center rounded-[var(--radius-control)] px-3 text-sm font-medium whitespace-nowrap text-ink-2 transition-colors duration-150 hover:text-ink sm:inline-flex"
           >
             Log in
           </Link>

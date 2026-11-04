@@ -1,7 +1,9 @@
 "use client";
 
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import { ChevronsUpDown, Download, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { usePwa } from "@/components/pwa/pwa-provider";
+import { ThemeMenuItem } from "@/components/theme/theme-toggle";
 import { signOut } from "@/features/auth/actions";
 import { cn } from "@/lib/cn";
 
@@ -18,6 +20,7 @@ export function AccountMenu({
   const [signingOut, setSigningOut] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const initial = email.charAt(0).toUpperCase() || "?";
+  const { available: canInstall, install } = usePwa();
 
   useEffect(() => {
     if (!open) return;
@@ -51,7 +54,7 @@ export function AccountMenu({
       >
         <span
           aria-hidden="true"
-          className="grid size-8 shrink-0 place-items-center rounded-full bg-ink text-sm font-semibold text-white"
+          className="grid size-8 shrink-0 place-items-center rounded-full bg-ink text-sm font-semibold text-canvas"
         >
           {initial}
         </span>
@@ -73,6 +76,21 @@ export function AccountMenu({
           <p className="truncate px-3 pt-2 pb-2.5 text-sm text-ink-3">
             Signed in as <span className="text-ink">{email}</span>
           </p>
+          <ThemeMenuItem />
+          {canInstall && (
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                void install();
+              }}
+              className="flex h-11 w-full items-center gap-2.5 rounded-lg px-3 text-sm font-medium text-ink select-none touch-manipulation transition-colors hover:bg-surface-2 active:bg-surface-3"
+            >
+              <Download className="size-4 text-ink-3" aria-hidden="true" />
+              Install app
+            </button>
+          )}
+          <div className="my-1 h-px bg-line" aria-hidden="true" />
           <form action={signOut} onSubmit={() => setSigningOut(true)}>
             <button
               type="submit"

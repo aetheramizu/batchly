@@ -137,7 +137,7 @@ export function PurchaseImageButton({
             />
             <span
               aria-hidden="true"
-              className="absolute right-1.5 bottom-1.5 grid size-7 place-items-center rounded-full bg-ink/75 text-white shadow-sm backdrop-blur-xs transition-colors group-hover:bg-ink"
+              className="absolute right-1.5 bottom-1.5 grid size-7 place-items-center rounded-full bg-black/65 text-white shadow-sm backdrop-blur-xs transition-colors group-hover:bg-black/80"
             >
               <Camera className="size-3.5" />
             </span>
@@ -152,7 +152,7 @@ export function PurchaseImageButton({
         {uploading && (
           <span
             aria-hidden="true"
-            className="absolute inset-0 grid place-items-center bg-ink/45 text-white backdrop-blur-[1px]"
+            className="absolute inset-0 grid place-items-center bg-black/45 text-white backdrop-blur-[1px]"
           >
             <LoaderCircle className="size-6 animate-spin" />
           </span>

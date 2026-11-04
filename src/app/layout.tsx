@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { PwaProvider } from "@/components/pwa/pwa-provider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -33,6 +35,15 @@ export const metadata: Metadata = {
   },
   description,
   applicationName: "Batchly",
+  appleWebApp: {
+    capable: true,
+    title: "Batchly",
+    statusBarStyle: "default",
+  },
+  // Safari still reads the Apple-specific flag for home-screen launches.
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+  },
   openGraph: {
     type: "website",
     siteName: "Batchly",
@@ -50,15 +61,28 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#f7f6f3",
+  colorScheme: "light dark",
 };
+
+/**
+ * Applies the stored theme before the first paint so a dark-mode user never
+ * sees a light flash. Mirrors ThemeProvider's storage key and DOM contract.
+ */
+const themeScript = `(function(){try{var t=localStorage.getItem("batchly-theme");if(t==="dark"){var r=document.documentElement;r.classList.add("dark");r.dataset.theme="dark";r.style.colorScheme="dark";}}catch(e){}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${inter.variable} ${jakarta.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <ThemeProvider>
+          <PwaProvider>{children}</PwaProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

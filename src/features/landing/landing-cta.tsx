@@ -38,10 +38,10 @@ export function LandingCta() {
             className="pointer-events-none absolute inset-y-0 left-0 hidden w-[27%] lg:block"
           >
             <span className="absolute left-[6%] top-[75px] size-12 bg-accent-glow/20 [clip-path:polygon(50%_0,100%_25%,100%_75%,50%_100%,0_75%,0_25%)]" />
-            <span className="absolute left-[25%] top-[22px] grid size-[58px] -rotate-[11deg] place-items-center rounded-[15px] border border-white bg-surface/85 text-accent shadow-[var(--shadow-float)]">
+            <span className="absolute left-[25%] top-[22px] grid size-[58px] -rotate-[11deg] place-items-center rounded-[15px] border border-line bg-surface/85 text-accent shadow-[var(--shadow-float)]">
               <BarChart3 className="size-7" strokeWidth={1.8} />
             </span>
-            <span className="absolute left-[48%] top-[72px] grid size-[58px] rotate-[10deg] place-items-center rounded-[15px] border border-white bg-surface/85 text-accent shadow-[var(--shadow-float)]">
+            <span className="absolute left-[48%] top-[72px] grid size-[58px] rotate-[10deg] place-items-center rounded-[15px] border border-line bg-surface/85 text-accent shadow-[var(--shadow-float)]">
               <Package className="size-7" strokeWidth={1.8} />
             </span>
           </div>
@@ -53,7 +53,7 @@ export function LandingCta() {
           >
             <span className="absolute left-[12%] top-[30px] size-11 bg-accent-glow/20 [clip-path:polygon(50%_0,100%_25%,100%_75%,50%_100%,0_75%,0_25%)]" />
             <span className="absolute right-[6%] top-[37px] flex rotate-[8deg] items-center gap-3 rounded-[13px] bg-surface/85 px-4 py-3 shadow-[var(--shadow-float)]">
-              <span className="grid size-7 place-items-center rounded-full bg-success text-white">
+              <span className="grid size-7 place-items-center rounded-full bg-success text-canvas">
                 <Check className="size-4" strokeWidth={2.5} />
               </span>
               <span className="text-left text-xs leading-tight text-ink-2">

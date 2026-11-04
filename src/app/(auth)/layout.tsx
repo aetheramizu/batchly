@@ -1,8 +1,12 @@
 import { Logo } from "@/components/brand/logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export default function AuthLayout({ children }: LayoutProps<"/">) {
   return (
-    <main className="flex min-h-dvh flex-col items-center px-4 py-10 sm:justify-center sm:py-16">
+    <main className="relative flex min-h-dvh flex-col items-center px-4 py-10 sm:justify-center sm:py-16">
+      <div className="absolute top-3 right-3">
+        <ThemeToggle />
+      </div>
       <Logo className="mb-8 text-2xl" />
       <div className="w-full max-w-[420px] rounded-[var(--radius-sheet)] border border-line bg-surface p-6 sm:p-8">
         {children}

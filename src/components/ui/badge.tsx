@@ -13,7 +13,7 @@ type Tone = "neutral" | "slate" | "info" | "teal" | "success" | "warning" | "dan
 
 const tones: Record<Tone, string> = {
   neutral: "bg-surface-2 text-ink-2",
-  slate: "bg-slate-100 text-slate-700",
+  slate: "bg-surface-3 text-ink-2",
   info: "bg-info-soft text-info",
   teal: "bg-teal-soft text-teal",
   success: "bg-success-soft text-success",

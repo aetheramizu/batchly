@@ -355,7 +355,7 @@ export function PurchaseForm(props: Props) {
                   className={cn(
                     "flex h-11 cursor-pointer items-center justify-center gap-1.5 rounded-[var(--radius-control)] border px-1.5 text-sm font-medium select-none touch-manipulation transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
                     country === option
-                      ? "border-ink bg-ink text-white"
+                      ? "border-ink bg-ink text-canvas"
                       : "border-line bg-surface text-ink-2 hover:border-line-strong active:bg-surface-2",
                   )}
                 >
