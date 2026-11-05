@@ -230,7 +230,7 @@ export function InstallButton({ className }: { className?: string }) {
       aria-label="Install app"
       title="Install app"
       className={cn(
-        "grid size-11 shrink-0 place-items-center rounded-full text-ink-3 select-none touch-manipulation transition-colors hover:bg-surface-2 hover:text-ink active:bg-surface-3",
+        "grid size-10 sm:size-9 shrink-0 cursor-pointer place-items-center rounded-[var(--radius-control)] border border-line bg-surface text-ink-2 shadow-2xs select-none touch-manipulation transition-all hover:border-line-strong hover:bg-surface-2 hover:text-ink active:scale-95 active:bg-surface-3",
         className,
       )}
     >

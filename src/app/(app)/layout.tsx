@@ -24,9 +24,9 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           <Link href="/dashboard" aria-label="Batchly dashboard">
             <Logo />
           </Link>
-          <div className="flex items-center gap-1">
-            <InstallButton className="size-9" />
-            <ThemeToggle className="size-9" />
+          <div className="flex items-center gap-1.5">
+            <InstallButton />
+            <ThemeToggle />
           </div>
         </div>
         <SidebarNav />
@@ -39,7 +39,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
         <Link href="/dashboard" aria-label="Batchly dashboard">
           <Logo />
         </Link>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <InstallButton />
           <ThemeToggle />
           <AccountMenu email={email} placement="down" compact />

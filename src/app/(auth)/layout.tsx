@@ -5,7 +5,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 export default function AuthLayout({ children }: LayoutProps<"/">) {
   return (
     <main className="relative flex min-h-dvh flex-col items-center px-4 py-10 sm:justify-center sm:py-16">
-      <div className="absolute top-3 right-3 flex items-center gap-1">
+      <div className="absolute top-3 right-3 flex items-center gap-1.5">
         <InstallButton />
         <ThemeToggle />
       </div>
