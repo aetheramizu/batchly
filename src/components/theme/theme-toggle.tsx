@@ -37,22 +37,3 @@ export function ThemeToggle({ className }: { className?: string }) {
     </button>
   );
 }
-
-/** Menu row for the account dropdown. */
-export function ThemeMenuItem() {
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === "dark";
-
-  return (
-    <button
-      type="button"
-      onClick={toggleTheme}
-      aria-pressed={isDark}
-      className="flex h-11 w-full items-center gap-2.5 rounded-lg px-3 text-sm font-medium text-ink select-none touch-manipulation transition-colors hover:bg-surface-2 active:bg-surface-3"
-    >
-      <ThemeIcon className="size-4 text-ink-3" />
-      {isDark ? "Light mode" : "Dark mode"}
-      <span className="ml-auto text-xs font-normal text-ink-3">{isDark ? "On" : "Off"}</span>
-    </button>
-  );
-}

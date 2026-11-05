@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { Dialog } from "@/components/ui/dialog";
+import { cn } from "@/lib/cn";
 
 type Platform = "ios" | "android" | "desktop";
 
@@ -33,6 +34,8 @@ const INITIAL_STATE: PwaState = {
   platform: "desktop",
 };
 
+export const PWA_INSTALLED_KEY = "batchly-pwa-installed";
+
 let state: PwaState = INITIAL_STATE;
 let deferredPrompt: InstallPromptEvent | null = null;
 let initialized = false;
@@ -44,6 +47,7 @@ function update(patch: Partial<PwaState>) {
 }
 
 function detectPlatform(): Platform {
+  if (typeof navigator === "undefined") return "desktop";
   const ua = navigator.userAgent;
   // iPadOS reports a desktop Safari UA, so check for touch on Mac as well.
   const isIpad = /macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
@@ -53,7 +57,16 @@ function detectPlatform(): Platform {
 }
 
 function isStandalone() {
+  if (typeof window === "undefined") return false;
+  const inStorage = (() => {
+    try {
+      return localStorage.getItem(PWA_INSTALLED_KEY) === "true";
+    } catch {
+      return false;
+    }
+  })();
   return (
+    inStorage ||
     window.matchMedia("(display-mode: standalone)").matches ||
     window.matchMedia("(display-mode: fullscreen)").matches ||
     (navigator as Navigator & { standalone?: boolean }).standalone === true
@@ -75,7 +88,25 @@ function init() {
   window.addEventListener("appinstalled", () => {
     deferredPrompt = null;
     update({ installed: true, promptAvailable: false });
+    try {
+      localStorage.setItem(PWA_INSTALLED_KEY, "true");
+    } catch {}
   });
+
+  // Check if Chrome already has this app installed
+  if ("getInstalledRelatedApps" in navigator) {
+    (navigator as Navigator & { getInstalledRelatedApps?: () => Promise<unknown[]> })
+      .getInstalledRelatedApps?.()
+      .then((apps) => {
+        if (apps && apps.length > 0) {
+          update({ installed: true, promptAvailable: false });
+          try {
+            localStorage.setItem(PWA_INSTALLED_KEY, "true");
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }
 
   // Pass-through worker: its fetch handler satisfies Chromium's install
   // heuristics without caching, so auth and Supabase data stay untouched.
@@ -108,13 +139,18 @@ async function requestInstall(): Promise<"prompted" | "instructions"> {
     await deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
     deferredPrompt = null;
+    const accepted = choice.outcome === "accepted";
     update({
       promptAvailable: false,
-      installed: choice.outcome === "accepted" ? true : state.installed,
+      installed: accepted ? true : state.installed,
     });
+    if (accepted) {
+      try {
+        localStorage.setItem(PWA_INSTALLED_KEY, "true");
+      } catch {}
+    }
     return "prompted";
   } catch {
-    // The event can only be used once; fall back to manual instructions.
     deferredPrompt = null;
     update({ promptAvailable: false });
     return "instructions";
@@ -125,6 +161,7 @@ type PwaContextValue = PwaState & {
   /** Worth showing an install control at all. */
   available: boolean;
   install: () => Promise<void>;
+  markInstalled: () => void;
 };
 
 const PwaContext = createContext<PwaContextValue | null>(null);
@@ -137,12 +174,20 @@ export function PwaProvider({ children }: { children: ReactNode }) {
     if ((await requestInstall()) === "instructions") setDialogOpen(true);
   }, []);
 
+  const markInstalled = useCallback(() => {
+    update({ installed: true, promptAvailable: false });
+    try {
+      localStorage.setItem(PWA_INSTALLED_KEY, "true");
+    } catch {}
+    setDialogOpen(false);
+  }, []);
+
   const available =
     !current.installed && (current.promptAvailable || current.platform !== "desktop");
 
   const value = useMemo(
-    () => ({ ...current, available, install }),
-    [current, available, install],
+    () => ({ ...current, available, install, markInstalled }),
+    [current, available, install, markInstalled],
   );
 
   return (
@@ -155,9 +200,9 @@ export function PwaProvider({ children }: { children: ReactNode }) {
         description="Add Batchly to your home screen and open it like a regular app."
       >
         {current.platform === "ios" ? (
-          <IosSteps />
+          <IosSteps onDone={markInstalled} />
         ) : (
-          <BrowserSteps canPrompt={current.promptAvailable} />
+          <BrowserSteps canPrompt={current.promptAvailable} onDone={markInstalled} />
         )}
       </Dialog>
     </PwaContext.Provider>
@@ -168,6 +213,30 @@ export function usePwa() {
   const context = useContext(PwaContext);
   if (!context) throw new Error("usePwa must be used inside PwaProvider");
   return context;
+}
+
+/**
+ * Compact Install icon button for headers. Automatically hides when the app
+ * is installed or running in standalone mode.
+ */
+export function InstallButton({ className }: { className?: string }) {
+  const { available, install } = usePwa();
+  if (!available) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={() => void install()}
+      aria-label="Install app"
+      title="Install app"
+      className={cn(
+        "grid size-11 shrink-0 place-items-center rounded-full text-ink-3 select-none touch-manipulation transition-colors hover:bg-surface-2 hover:text-ink active:bg-surface-3",
+        className,
+      )}
+    >
+      <Download className="size-[18px]" aria-hidden="true" />
+    </button>
+  );
 }
 
 function Step({ index, children }: { index: number; children: ReactNode }) {
@@ -181,37 +250,45 @@ function Step({ index, children }: { index: number; children: ReactNode }) {
   );
 }
 
-function IosSteps() {
+function IosSteps({ onDone }: { onDone: () => void }) {
   return (
-    <ol className="flex flex-col gap-3">
-      <Step index={1}>
-        <span className="inline-flex items-center gap-1.5 text-ink">
-          Tap the Share button
-          <Share className="size-4 text-info" aria-hidden="true" />
-        </span>{" "}
-        in Safari&apos;s toolbar.
-      </Step>
-      <Step index={2}>
-        Scroll the menu and choose{" "}
-        <span className="font-medium text-ink">
-          Add to Home Screen{" "}
-          <Plus className="inline size-3.5 align-[-2px] text-ink-3" aria-hidden="true" />
-        </span>
-        .
-      </Step>
-      <Step index={3}>
-        Tap <span className="font-medium text-ink">Add</span> to finish. Batchly then opens from
-        your home screen.
-      </Step>
-      <p className="pt-1 text-xs text-ink-3">
-        Only Safari on iOS 16.4 or later can add the app. If you do not see the option, update iOS
-        first.
-      </p>
-    </ol>
+    <div className="flex flex-col gap-4">
+      <ol className="flex flex-col gap-3">
+        <Step index={1}>
+          <span className="inline-flex items-center gap-1.5 text-ink">
+            Tap the Share button
+            <Share className="size-4 text-info" aria-hidden="true" />
+          </span>{" "}
+          in Safari&apos;s toolbar.
+        </Step>
+        <Step index={2}>
+          Scroll the menu and choose{" "}
+          <span className="font-medium text-ink">
+            Add to Home Screen{" "}
+            <Plus className="inline size-3.5 align-[-2px] text-ink-3" aria-hidden="true" />
+          </span>
+          .
+        </Step>
+        <Step index={3}>
+          Tap <span className="font-medium text-ink">Add</span> to finish. Batchly will then open from
+          your home screen.
+        </Step>
+      </ol>
+      <div className="flex items-center justify-between gap-3 border-t border-line pt-3">
+        <p className="text-xs text-ink-3">Requires iOS 16.4+ in Safari.</p>
+        <button
+          type="button"
+          onClick={onDone}
+          className="rounded-[var(--radius-control)] bg-surface-2 px-3.5 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-surface-3 active:scale-95"
+        >
+          Got it
+        </button>
+      </div>
+    </div>
   );
 }
 
-function BrowserSteps({ canPrompt }: { canPrompt: boolean }) {
+function BrowserSteps({ canPrompt, onDone }: { canPrompt: boolean; onDone: () => void }) {
   if (canPrompt) {
     return (
       <div className="flex flex-col gap-3">
@@ -231,23 +308,34 @@ function BrowserSteps({ canPrompt }: { canPrompt: boolean }) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <p className="text-sm text-ink-2">
-        This browser has no automatic install prompt. Use the browser menu instead:
-      </p>
-      <ol className="flex flex-col gap-3">
-        <Step index={1}>
-          Open the browser menu
-          <MoreVertical className="ml-1 inline size-4 align-[-3px] text-ink-3" aria-hidden="true" />
-        </Step>
-        <Step index={2}>
-          Choose <span className="font-medium text-ink">Install app</span> or{" "}
-          <span className="font-medium text-ink">Add to Home screen</span>.
-        </Step>
-        <Step index={3}>
-          Confirm the prompt. Batchly then opens from your home screen.
-        </Step>
-      </ol>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
+        <p className="text-sm text-ink-2">
+          This browser has no automatic install prompt. Use the browser menu instead:
+        </p>
+        <ol className="flex flex-col gap-3">
+          <Step index={1}>
+            Open the browser menu
+            <MoreVertical className="ml-1 inline size-4 align-[-3px] text-ink-3" aria-hidden="true" />
+          </Step>
+          <Step index={2}>
+            Choose <span className="font-medium text-ink">Install app</span> or{" "}
+            <span className="font-medium text-ink">Add to Home screen</span>.
+          </Step>
+          <Step index={3}>
+            Confirm the prompt. Batchly then opens from your home screen.
+          </Step>
+        </ol>
+      </div>
+      <div className="flex justify-end border-t border-line pt-2">
+        <button
+          type="button"
+          onClick={onDone}
+          className="rounded-[var(--radius-control)] bg-surface-2 px-3.5 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-surface-3 active:scale-95"
+        >
+          Got it
+        </button>
+      </div>
     </div>
   );
 }

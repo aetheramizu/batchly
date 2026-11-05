@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { AccountMenu } from "@/components/layout/account-menu";
 import { BottomNav, SidebarNav } from "@/components/layout/app-nav";
+import { InstallButton } from "@/components/pwa/pwa-provider";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ToastProvider } from "@/components/ui/toast";
 import { requireUser } from "@/lib/auth";
 
@@ -18,9 +20,15 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       </a>
 
       <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-line bg-surface px-4 py-6 lg:flex">
-        <Link href="/dashboard" className="mb-8 px-2" aria-label="Batchly dashboard">
-          <Logo />
-        </Link>
+        <div className="mb-8 flex items-center justify-between px-2">
+          <Link href="/dashboard" aria-label="Batchly dashboard">
+            <Logo />
+          </Link>
+          <div className="flex items-center gap-1">
+            <InstallButton className="size-9" />
+            <ThemeToggle className="size-9" />
+          </div>
+        </div>
         <SidebarNav />
         <div className="mt-auto border-t border-line pt-3">
           <AccountMenu email={email} />
@@ -31,7 +39,11 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
         <Link href="/dashboard" aria-label="Batchly dashboard">
           <Logo />
         </Link>
-        <AccountMenu email={email} placement="down" compact />
+        <div className="flex items-center gap-1">
+          <InstallButton />
+          <ThemeToggle />
+          <AccountMenu email={email} placement="down" compact />
+        </div>
       </header>
 
       <div className="lg:pl-64">
