@@ -10,7 +10,6 @@ export type SourceType = Enums["source_type"];
 export type Country = Enums["country"];
 export type TrackingStatus = Enums["tracking_status"];
 export type PurchaseOrigin = Enums["purchase_origin"];
-export type OwnershipStatus = Enums["ownership_status"];
 export type CostType = Enums["additional_cost_type"];
 export type PaymentStatus = "UNPAID" | "PARTIAL" | "PAID";
 
@@ -92,10 +91,6 @@ export const COST_TYPE_LABEL: Record<CostType, string> = {
 export const STALE_THRESHOLD_DAYS = 14;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-export function isTrackingStatus(value: unknown): value is TrackingStatus {
-  return TRACKING_STATUSES.includes(value as TrackingStatus);
-}
 
 export function isCountry(value: unknown): value is Country {
   return COUNTRIES.includes(value as Country);

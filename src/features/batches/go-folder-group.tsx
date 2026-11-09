@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useId, useState } from "react";
-import { StaleBadge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/surface";
 import { cn } from "@/lib/cn";
 import { formatRupiah, pluralize } from "@/lib/format";

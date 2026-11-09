@@ -28,8 +28,6 @@ Batchly replaces the spreadsheet-and-chat-history routine with one lightweight p
 - **How much have I spent?** Paid, remaining, additional costs, and OS amounts.
 - **What needs my attention?** Stale tracking, unpaid balances, and OS payments still to receive.
 
-![Batchly dashboard showing spending, tracking overview, and items that need attention](public/batchly-dashboard.png)
-
 ## Features
 
 ### Purchases
@@ -52,7 +50,7 @@ Batchly replaces the spreadsheet-and-chat-history routine with one lightweight p
 - Six simple statuses: **Purchased**, **Warehouse**, **In Transit**, **Indonesia**, **Admin Received**, and **Delivered**.
 - Statuses can be skipped; they do not have to follow a strict sequence.
 - Every trackable item records when its status last changed.
-- Anything without an update for **14+ days** is flagged in the dashboard's attention list. “Stale” means no recent update — never that a package is late or lost.
+- Anything without an update for **14+ days** is flagged on the batch and purchase lists. “Stale” means no recent update — never that a package is late or lost.
 
 ### Payments and additional costs
 
@@ -69,9 +67,8 @@ Batchly replaces the spreadsheet-and-chat-history routine with one lightweight p
 
 ### Finance and dashboard
 
-- Dashboard summary: total spent, amount to pay, additional costs, active purchases, active batches, delivered items, and OS purchases.
-- Tracking overview grouped by status.
-- A single “Needs attention” card for stale updates, outstanding payments, unpaid costs, and OS payments to collect.
+- Dashboard shows recently added purchases and a tracking overview with counts for every status.
+- Stale batches are flagged in Batches, outstanding balances in Purchases, and unpaid costs and OS amounts in Finance.
 - Finance breaks down spending, outstanding balances by payment status, additional costs, and OS amounts.
 
 ### The rest
